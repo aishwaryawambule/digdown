@@ -1,5 +1,5 @@
 # One image: the backend, with the dashboard built into it.
-FROM node:22-alpine AS dashboard
+FROM node:25-alpine AS dashboard
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
