@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css"; /* shadcn custom variants: data-horizontal, data-open, etc. */
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource/commit-mono/400.css";
+@import "@fontsource/commit-mono/500.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Digdown's look: a tool you keep open on a second screen. Neutral greys so the data
+  leads, and one marker yellow for what you can act on, like highlighting a printed log.
+  Red, orange and green are only ever status.
+  Fonts are bundled rather than loaded from a CDN, because Digdown promises it
+  contacts nobody except the model you choose.
+*/
+@theme inline {
+  --font-sans: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Commit Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-display);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  --color-sev-oom: var(--sev-oom);
+  --color-sev-crash: var(--sev-crash);
+  --color-sev-unhealthy: var(--sev-unhealthy);
+  --color-sev-restart: var(--sev-restart);
+  --color-sev-disk: var(--sev-disk);
+  --color-sev-stopped: var(--sev-stopped);
+  --color-sev-paused: var(--sev-paused);
+  --color-sev-created: var(--sev-created);
+  --color-sev-http: var(--sev-http);
+  --color-sev-latency: var(--sev-latency);
+  --color-sev-log: var(--sev-log);
+  --color-sev-metric: var(--sev-metric);
+  --color-sev-mempressure: var(--sev-mempressure);
+  --color-live: var(--live);
+
+  /* Tight corners, as in most instrument panels. */
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 5px;
+  --radius-xl: 6px;
+
+  /* The page scales from a smaller root on wide screens; keep small text readable. */
+  --text-xs: 0.82rem;
+  --text-xs--line-height: 1.35;
+  --text-sm: 0.93rem;
+  --text-sm--line-height: 1.45;
+}
+
+/* Light, for bright rooms. Yellow can't carry text on white, so ink leads here. */
+:root {
+  --radius: 5px;
+
+  --bg: #eeefed;
+  --surface: #ffffff;
+  --surface-2: #e4e5e2;
+  --ink: #191a1c;
+  --ink-2: #44464a;
+  --ink-3: #5a5c60;
+  --line: #d6d7d4;
+  --line-strong: #85878a;
+  --brand: #191a1c;
+  --brand-ink: #f6e96f;
+  --brand-soft: #f3eaa0;
+  --success-text: #17693f;
+  --success-soft: #d7e8db;
+  --warning-text: #9a4d00;
+  --warning-soft: #f5e2cc;
+  --danger-text: #b3211b;
+  --danger-solid: #b8211c;
+  --danger-soft: #f5dcd9;
+  --info-text: #255a8b;
+  --info-soft: #d9e5f0;
+  --card-shadow: none;
+  color-scheme: light;
+}
+
+/* Dark, the default */
+.dark {
+  --bg: #141517;
+  --surface: #1b1c1f;
+  --surface-2: #26272b;
+  --ink: #e6e6e3;
+  --ink-2: #b6b6b2;
+  --ink-3: #a0a09c;
+  --line: #303236;
+  --line-strong: #666870;
+  --brand: #ead94c;
+  --brand-ink: #1c1a06;
+  --brand-soft: #3a3514;
+  --success-text: #62c98f;
+  --success-soft: #1a3527;
+  --warning-text: #f0a05a;
+  --warning-soft: #3d2b18;
+  --danger-text: #f27c72;
+  --danger-solid: #f27c72;
+  --danger-soft: #43231f;
+  --info-text: #80b4e6;
+  --info-soft: #1d2f42;
+  --card-shadow: none;
+  color-scheme: dark;
+}
+
+/* The component library's names, mapped onto the theme. */
+:root, .dark {
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-ink);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--surface-2);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger-solid);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brand);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink-2);
+  --sidebar-border: var(--line);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--ink);
+
+  /* Feedback colours, only ever for live state. How bad it is, not what kind:
+     the label already says what kind. */
+  --sev-oom: var(--danger-text);
+  --sev-crash: var(--danger-text);
+  --sev-http: var(--danger-text);
+  --sev-unhealthy: var(--warning-text);
+  --sev-restart: var(--warning-text);
+  --sev-disk: var(--warning-text);
+  --sev-mempressure: var(--warning-text);
+  --sev-latency: var(--warning-text);
+  --sev-log: var(--warning-text);
+  --sev-stopped: var(--ink-3);
+  --sev-paused: var(--info-text);
+  --sev-created: var(--info-text);
+  --sev-metric: var(--info-text);
+  --live: var(--success-text);
+}
+
+:root {
+  --topbar: 3rem; /* the phone header; the sidebar replaces it on wide screens */
+  --statusbar: 0px;
+}
+@media (min-width: 1024px) {
+  :root {
+    --topbar: 0px;
+    --statusbar: 1.75rem;
+  }
+  /* A little denser on a laptop. Phones keep the larger size, for fingers. */
+  html {
+    font-size: 15px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    line-height: 1.5;
+  }
+  h1, h2, h3 {
+    @apply font-display;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  /* Tailwind v4's preflight drops the pointer cursor from buttons. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  a[href],
+  label[for],
+  summary,
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+@layer utilities {
+  .font-data {
+    font-family: var(--font-mono);
+    font-feature-settings: "zero" 1;
+  }
+  /* A small plain label. */
+  .label-eyebrow {
+    font-size: 0.86rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  /* Pages stop growing here, so a wide monitor doesn't spread them out until
+     related things are too far apart to read together. */
+  .page-width {
+    width: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+  }
+  /* The heading of a panel: small, so the data below it leads. */
+  .panel-title {
+    font-size: 0.93rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--foreground);
+  }
+
+  /* Live status dot. Stills under reduced motion. */
+  .pulse-ring {
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
+  }
+
+  /* A new incident arriving: the one moment worth drawing the eye to. */
+  .flash-in {
+    animation: flash-in 1.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  @keyframes flash-in {
+    0%   { background-color: var(--brand-soft); }
+    100% { background-color: var(--surface); }
+  }
+
+  /* Surfaces. Solid with a hairline, the same in every position. */
+  .glass,
+  .glass-lite {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .glass {
+    box-shadow: var(--card-shadow);
+  }
+  .glass-chrome {
+    background-color: var(--surface);
+  }
+  .glass-raise {
+    transition: border-color 140ms cubic-bezier(0.2, 0.7, 0.2, 1),
+                background-color 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .glass-raise:hover {
+    border-color: var(--line-strong);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-ring,
+  .flash-in,
+  .animate-spin {
+    animation: none !important;
+  }
+  .glass-raise {
+    transition: none;
+  }
+}

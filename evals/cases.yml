@@ -1,0 +1,118 @@
+# Failures with known causes, for measuring diagnosis quality:
+#   python -m digdown.evaluate --model qwen3:14b
+# `cause` passes if any phrase appears in the diagnosis, unless a `wrong` phrase does.
+# `fix` is the action types a good plan would include; `manual` means it needs a person.
+- name: out-of-memory with a limit
+  target: shop-cache-1
+  signal: oom
+  detail: {exit_code: 137}
+  cause: [memory, oom]
+  wrong: [disk, database]
+  fix: [set_resource_limit]
+  containers:
+    - {name: shop-cache-1, service: cache, project: shop, status: exited, exit_code: 137, oom_killed: true, mem_limit_bytes: 50331648, image: "redis:7-alpine"}
+  logs:
+    shop-cache-1: |
+      1:M 06 Nov 04:24:55.675 * Ready to accept connections tcp
+      1:M 06 Nov 04:25:31.102 # WARNING: memory usage 47.9M of 48M limit
+      Killed
+
+- name: a typo in a config file
+  target: gateway-proxy-1
+  signal: restart_loop
+  detail: {restart_count: 12}
+  cause: ["proxy_passs", "unknown directive", "typo", "misspel"]
+  wrong: [database, memory]
+  fix: manual
+  containers:
+    - {name: gateway-proxy-1, service: proxy, project: gateway, status: restarting, exit_code: 1, restart_count: 12, image: "nginx:alpine"}
+  logs:
+    gateway-proxy-1: |
+      /docker-entrypoint.sh: Configuration complete; ready for start up
+      2026/11/06 04:12:40 [emerg] 1#1: unknown directive "proxy_passs" in /etc/nginx/conf.d/default.conf:14
+      nginx: [emerg] unknown directive "proxy_passs" in /etc/nginx/conf.d/default.conf:14
+
+- name: database it depends on is stopped
+  target: git-server-1
+  signal: restart_loop
+  detail: {restart_count: 40}
+  cause: [stopped, exited, "not running", "is down", "shut down"]
+  must_mention: [db, database, mysql]
+  wrong: [memory, disk]
+  fix: [start]
+  containers:
+    - {name: git-server-1, service: server, project: git, status: restarting, exit_code: 1, restart_count: 40, image: "gitea/gitea:1.22", depends_on: [db]}
+    - {name: git-db-1, service: db, project: git, status: exited, exit_code: 0, image: "mysql:8.4"}
+  logs:
+    git-server-1: |
+      routers/init.go:70:mustInit() [F] code.gitea.io/gitea/models.InitEngine failed
+      Failed to initialize ORM engine: dial tcp: lookup db on 127.0.0.11:53: no such host
+    git-db-1: |
+      [Server] /usr/sbin/mysqld: Normal shutdown.
+      [InnoDB] Shutdown completed
+      [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.4.3)
+
+- name: missing secret
+  target: shop-worker-1
+  signal: crash
+  detail: {exit_code: 1}
+  cause: [STRIPE_WEBHOOK_SECRET]
+  wrong: [memory]
+  fix: manual
+  containers:
+    - {name: shop-worker-1, service: worker, project: shop, status: exited, exit_code: 1, image: "shop/worker:1.42"}
+  logs:
+    shop-worker-1: |
+      worker: starting, 4 queues
+      worker: loading payment settings
+      Traceback (most recent call last):
+        File "/app/payments.py", line 18, in load
+          secret = os.environ["STRIPE_WEBHOOK_SECRET"]
+      KeyError: 'STRIPE_WEBHOOK_SECRET'
+
+- name: port already in use
+  target: blog-web-1
+  signal: crash
+  detail: {exit_code: 1}
+  cause: ["already in use", "port 80", "bind"]
+  wrong: [memory, database]
+  fix: manual
+  containers:
+    - {name: blog-web-1, service: web, project: blog, status: exited, exit_code: 1, image: "nginx:alpine"}
+  logs:
+    blog-web-1: |
+      2026/11/06 04:30:11 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+      nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+      nginx: [emerg] still could not bind()
+
+- name: a crash with a clear signal
+  target: queue-redis-1
+  signal: crash
+  detail: {exit_code: 139}
+  cause: [segfault, "segmentation", "signal 11", "sigsegv", "139"]
+  wrong: [memory limit, disk]
+  fix: [restart]
+  containers:
+    - {name: queue-redis-1, service: redis, project: queue, status: exited, exit_code: 139, image: "redis:7-alpine"}
+  logs:
+    queue-redis-1: |
+      1:M 06 Nov 04:24:55.675 * Ready to accept connections tcp
+      === REDIS BUG REPORT START: Cut & paste starting from here ===
+      1:M 06 Nov 04:25:01.331 # Redis 7.2.5 crashed by signal: 11, si_code: 1
+      1:M 06 Nov 04:25:01.331 # Accessing address: 0xffffffffffffffff
+      === REDIS BUG REPORT END. Make sure to include from START to END. ===
+
+- name: stopped with no reason in its log
+  target: tasks-api-1
+  signal: stopped
+  detail: {restart_policy: "no"}
+  cause: ["can't tell", "cannot tell", "can't determine", "cannot determine", "not clear", "unclear", "doesn't show", "does not show", "don't show", "do not show", "unknown", "no reason", "not known", "not say", "doesn't say", "does not say", "doesn't explain", "does not explain", "not specified", "no indication", "no evidence"]
+  wrong: [administrator, "someone ran", "a user", "user-initiated", "operator", "memory"]
+  fix: manual
+  containers:
+    - {name: tasks-api-1, service: api, project: tasks, status: exited, exit_code: 0, image: "tasks/api:3.2"}
+  logs:
+    tasks-api-1: |
+      2026-11-06 04:39:58 INFO  handled 1,204 requests in the last hour
+      2026-11-06 04:40:00 INFO  server shutting down
+      2026-11-06 04:40:00 INFO  goodbye

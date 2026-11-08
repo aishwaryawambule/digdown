@@ -1,0 +1,102 @@
+# Digdown configuration. Copy to digdown.yml and edit. All keys are optional;
+# shown values are the built-in defaults.
+mode: observe                 # observe (detect+diagnose) | propose (+approval gate) | execute
+db_path: digdown.db
+compose_path: docker-compose.yml
+project_name: ""              # "" watches every container on the host; set to a
+                              #   compose project name (or a YAML list of them) to
+                              #   watch only those stacks, e.g. [shop, grafana]
+exclude_projects: []          # compose project(s) to never watch, e.g. [blog] — wins
+                              #   over project_name; use to skip a stack you have
+                              #   intentionally taken down so it isn't flagged as stopped
+poll_interval_seconds: 15
+debounce_polls: 1             # raise to require a signal to persist across N polls
+restart_loop_threshold: 3     # cumulative restart increments before a restart-loop fires
+correlation_window_seconds: 120  # link cascade dependents to a parent within this window
+disk_percent_threshold: 90.0
+disk_path: /
+host: 127.0.0.1               # only this computer. Any other address requires a token.
+port: 8088
+
+# --- Security ---
+auth_token: ""                # if set, required for the dashboard and API (Bearer / X-Digdown-Token)
+notify_webhook_url: ""        # alerts: a Discord or Slack webhook, an ntfy topic, or any JSON endpoint
+
+# --- Auto heal: low-risk fixes run without a click. Needs `mode: execute`. ---
+auto_heal_all: false          # every app, including ones started later
+auto_heal_stacks: []          # or only these compose project names, e.g. [photos, notes]
+auto_heal_max_attempts: 3     # per container in 24 hours, then it stops and asks you
+# auto_heal_disk_cleanup: true  # when the disk is full, delete unused images and build cache. Can't be undone.
+#   Secret redaction is always on: values from .env / compose `environment` (plus
+#   credential patterns) are masked in tool output, the store, and the dashboard.
+
+# --- Agent core: root-cause diagnosis ---
+# On each new incident, the Diagnostician investigates with read-only tools and
+# a Critic adversarially checks the conclusion. Runs even in observe mode.
+agent_enabled: true
+
+# Provider: "openai" (any OpenAI-compatible endpoint, e.g. Ollama) or "claude".
+llm_provider: openai
+
+# --- openai provider (Ollama / LiteLLM / vLLM / OpenRouter / ...) ---
+llm_base_url: http://localhost:11434/v1   # any OpenAI-compatible endpoint
+llm_api_key: not-needed                    # most local backends ignore this
+llm_model: qwen3:14b                       # a tool-calling capable model
+llm_temperature: 0.1                       # openai provider only
+
+# --- claude provider (first-party Anthropic Messages API) ---
+# Set llm_provider: claude and llm_model to a Claude id, e.g. claude-sonnet-5-5.
+# Use an API key: export ANTHROPIC_API_KEY, or set llm_api_key below.
+#
+# llm_provider: claude
+# llm_model: claude-sonnet-5-5
+# llm_auth_token: ""          # leave empty to read $ANTHROPIC_AUTH_TOKEN from the environment
+# llm_max_tokens: 4096        # claude response cap (temperature is not sent — Opus 4.x rejects it)
+
+log_tail_lines: 200           # max log lines the diagnosis tools expose
+max_tool_calls: 8             # per-agent ReAct step cap
+max_critic_rounds: 2          # diagnose↔critic retries before CLOSED_NO_FIX
+reuse_recurring_diagnosis: true  # when a target recurs with the same signal, reuse
+                              #   its prior diagnosis + plan instead of re-diagnosing
+
+# --- Executor: only runs when mode is `execute` ---
+verify_polls: 6               # health checks after applying a fix
+verify_poll_interval: 10      # seconds between checks (~60s healthy window)
+env_path: ""                  # env file for set_env_var (default: <compose dir>/.env)
+
+# --- App-level probes: catch failures Docker can't see (container stays "up") ---
+# Optional. Omit the whole `probes:` block for today's pure-Docker behavior.
+# Each probe signal binds to a real discovered container (`target`); unbound
+# targets are dropped. App-level incidents flow through the same
+# diagnose -> propose -> approve -> fix -> verify pipeline as Docker signals.
+probes:
+  # HttpProbe: active GET checks (read-safe). Fires `http_error` on a status
+  # mismatch / timeout / connection failure, `slow_response` when slower than
+  # the latency threshold. You must name each URL.
+  http:
+    - name: home                         # check name (dedup discriminator)
+      url: http://127.0.0.1:8080/healthz # full URL Digdown can reach
+      target: shop-web             # a discovered container/service name
+      expect_status: "2xx-3xx"           # ok band(s): "2xx-3xx", "200", "200-204"
+      timeout_ms: 5000
+      latency_threshold_ms: 2000         # over this on success -> slow_response
+
+  # LogScanProbe: scans a container's recent logs for an error spike — no URL
+  # list. Point it at a reverse proxy with a 5xx pattern to catch errors on ANY
+  # endpoint. Fires `log_error_spike` when >= `threshold` lines match within the
+  # last `window_seconds`. Reads logs only; the signal stores counts, never log
+  # text. Tune `patterns` to your proxy/app log format.
+  logs:
+    - target: shop-nginx           # a discovered container (e.g. the proxy)
+      name: 5xx                          # check name (dedup discriminator)
+      patterns: ['\s5\d\d\s']            # omit to use built-in defaults
+      threshold: 5                       # matching lines within the window -> fire
+      window_seconds: 60
+      max_lines: 1000                    # safety cap on lines read per scan
+  #   Built-in default patterns (used when `patterns` is omitted): HTTP 5xx,
+  #   Python tracebacks, and generic ERROR lines.
+
+# --- Grafana alert ingestion (POST /api/alerts) ---
+# When ingesting a Grafana alert webhook, this label's value names the app/target
+# the alert is about (used to bind the incident).
+alert_target_label: target
