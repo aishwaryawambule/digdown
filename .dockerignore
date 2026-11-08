@@ -1,0 +1,25 @@
+# Keep the build context to what the image needs.
+.git
+.venv
+**/__pycache__
+*.pyc
+*.egg-info
+digdown.db
+digdown.yml
+digdown.yml.bak*
+digdown.token
+.env
+tests
+docs
+sandbox
+.pytest_cache
+.ruff_cache
+.superpowers
+.claude
+.mcp.json
+*.md
+web/node_modules
+web/dist
+digdown/static
+website
+evals

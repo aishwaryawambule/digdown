@@ -1,0 +1,32 @@
+# Runs Digdown in one container:
+#
+#   docker compose up -d --build
+#
+# Then open http://localhost:8088, sign in with the token printed by
+# `docker compose logs digdown`, and finish setup in your browser.
+name: digdown
+
+services:
+  digdown:
+    build: .
+    image: digdown
+    restart: unless-stopped
+    ports:
+      # Only this computer can reach it. Digdown still asks for a token, because other
+      # containers on this machine may be able to reach this port. Find it with:
+      #   docker compose logs digdown
+      - "127.0.0.1:8088:8088"
+    volumes:
+      # How Digdown sees and restarts your containers. This gives it full control
+      # of Docker, so see docs/security.md for what limits what it can do.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - digdown-data:/data
+      # Optional: your stack's compose file. It lets Digdown group related
+      # failures. Add `compose_path: /stack/docker-compose.yml` to the settings file.
+      # - ./docker-compose.yml:/stack/docker-compose.yml:ro
+    extra_hosts:
+      # Lets it reach a model running on this computer, such as Ollama.
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  digdown-data:

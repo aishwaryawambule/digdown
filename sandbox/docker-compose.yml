@@ -1,0 +1,71 @@
+# Digdown chaos sandbox — a neutral stack of intentionally-broken services that
+# exercises every detector (and, in propose/execute mode, the full remediation
+# loop). Nothing here is anyone's real app; it exists only to break on purpose.
+#
+#   docker compose -f sandbox/docker-compose.yml up -d
+#   # point digdown.yml `compose_path` at this file, then run Digdown
+#
+name: digdown-sandbox
+
+services:
+  # Exits non-zero on boot → CRASH
+  crasher:
+    image: alpine:3
+    command: ["sh", "-c", "echo starting; echo 'FATAL: config missing' >&2; exit 1"]
+
+  # Crashes a few seconds after start, restarts forever → RESTART_LOOP
+  flapper:
+    image: alpine:3
+    restart: always
+    command: ["sh", "-c", "echo up; sleep 3; echo 'unhandled error' >&2; exit 1"]
+
+  # Allocates well past its memory limit → OOM (exit 137, OOMKilled)
+  hog:
+    image: python:3.12-alpine
+    mem_limit: 48m
+    command: >
+      python -c "import time;
+      b=bytearray();
+      [(b.extend(bytearray(10*1024*1024)), time.sleep(0.2)) for _ in range(100)]"
+
+  # Healthcheck always fails → UNHEALTHY (container stays up)
+  sicko:
+    image: nginx:alpine
+    healthcheck:
+      test: ["CMD", "sh", "-c", "exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 2
+      start_period: 3s
+
+  # Root of a dependency cascade — dies on boot
+  db:
+    image: alpine:3
+    command: ["sh", "-c", "echo 'db: disk init failed' >&2; exit 1"]
+
+  # Depends on db; its failure should correlate to db's incident, not stand alone
+  api:
+    image: alpine:3
+    depends_on:
+      - db
+    command: ["sh", "-c", "echo 'api waiting on db'; sleep 3600"]
+
+  # Boots ONLY when APP_API_KEY is set; without it, exits 1 with a loud log → CRASH.
+  # Unlike every other service here, this one is *fixable*: in execute mode Digdown
+  # can set_env_var(APP_API_KEY=...) + recreate, then verify it stays up. The .env
+  # it reads (sandbox/.env) doesn't exist at first, so it crashes until fixed.
+  config:
+    image: alpine:3
+    env_file:
+      - path: .env
+        required: false
+    command:
+      - sh
+      - -c
+      - |
+        if [ -z "$$APP_API_KEY" ]; then
+          echo "FATAL: required environment variable APP_API_KEY is not set" >&2
+          exit 1
+        fi
+        echo "config OK — APP_API_KEY is set, staying up"
+        sleep 3600

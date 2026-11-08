@@ -1,0 +1,611 @@
+---
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource/commit-mono/400.css';
+import '@fontsource/caveat/500.css';
+import incidents from '../../../docs/images/dashboard.png';
+import incident from '../../../docs/images/incident.png';
+import autoHeal from '../../../docs/images/auto-heal.png';
+import containers from '../../../docs/images/containers.png';
+import apps from '../../../docs/images/settings-apps.png';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const doc = (p = '') => `${base}/docs/${p}${p ? '/' : ''}`;
+const github = 'https://github.com/aishwaryawambule/digdown';
+const screens = [
+  { key: 'incidents', more: 'How to read the dashboard', label: 'Incidents', src: incidents, alt: 'The Incidents page: a container ran out of memory, with the cause, a proposed fix, and what auto heal has already fixed.', caption: 'Does anything need you? The most urgent problem comes first.', link: 'using-the-dashboard' },
+  { key: 'incident', more: 'How to handle an incident', label: 'One incident', src: incident, alt: 'One incident, showing what went wrong, the evidence, the proposed fix and the second AI check.', caption: 'The cause, the evidence behind it, and what happens if the fix fails.', link: 'handle-an-incident' },
+  { key: 'heal', more: 'How auto heal works', label: 'Auto heal', src: autoHeal, alt: 'The Auto heal page: a switch for every app at once or one app at a time, then what it fixed and what it left for a person.', caption: 'Turn it on for every app or one at a time, and see what it fixed by itself.', link: 'auto-heal' },
+  { key: 'containers', more: 'How to read the dashboard', label: 'Containers', src: containers, alt: 'The Containers page, a table of each container with status, image, CPU, memory and restarts.', caption: 'Everything it watches, with status, CPU, memory and restarts.', link: 'using-the-dashboard' },
+  { key: 'apps', more: 'How to choose apps', label: 'Settings', src: apps, alt: 'The Apps tab in Settings, listing what Docker is running and which of it to watch.', caption: 'Choose which apps it watches. The rest of the settings are here too.', link: 'choose-apps' },
+];
+
+const installs = [
+  { key: 'docker', label: 'With Docker', needs: 'You only need Docker. This is the one to use on your own containers, and it takes about a minute.', code: 'docker run -d --name digdown --restart unless-stopped \\\n  -p 127.0.0.1:8088:8088 \\\n  -v /var/run/docker.sock:/var/run/docker.sock -v digdown-data:/data \\\n  --add-host host.docker.internal:host-gateway \\\n  ghcr.io/aishwaryawambule/digdown:latest\ndocker logs digdown    # prints a link that signs you in', next: 'Open the link, and setup asks three questions: what to watch, which AI to use, and what Digdown may do.', link: 'install-with-docker' },
+  { key: 'direct', label: 'Without Docker', needs: 'You need Python 3.11 or newer, Node 22 or newer, Git, and Docker running on the same computer.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown start', next: 'Then open localhost:8088, and it asks what to watch and which AI to use.', link: 'install-directly' },
+  { key: 'demo', label: 'Just the demo', needs: 'You need Python 3.11 or newer, Node 22 or newer and Git, but no Docker and no AI. Everything is simulated, so nothing on your computer changes.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown demo', next: 'Your browser opens the dashboard, and four failures play out over about a minute.', link: 'try-the-demo' },
+];
+
+const levels = [
+  { key: 'explain', label: 'Explain only' },
+  { key: 'suggest', label: 'Suggest fixes' },
+  { key: 'approve', label: 'Fix after I approve' },
+  { key: 'heal', label: 'Auto heal' },
+];
+
+// A simulation of how the real thing behaves. The rules match digdown/heal.py.
+const scenarios = [
+  { key: 'memory', label: 'Ran out of memory', file: 'docker logs shop-cache',
+    lines: [
+      { t: '09:41:02', text: 'Background saving started by pid 214' },
+      { t: '09:41:09', text: 'Memory usage 251.2M of maxmemory 256M', mark: true },
+      { t: '09:41:14', text: 'bulk import from shop-worker added 41,288 keys', mark: true },
+      { t: '09:41:15', text: 'Killed', ring: true, note: "there's the problem" },
+      { t: '09:41:15', text: 'exited with code 137', note: 'restart it and this just happens again' },
+    ],
+    cause: 'a bulk import from shop-worker pushed Redis past its 256 MB limit, so the kernel killed it.',
+    fix: 'Raise the shop-cache memory limit to 512 MB and restart it.', heal: 'yes', holds: true,
+    done: 'Limit raised to 512 MB, and it stayed healthy through all 6 checks. Add mem_limit: 512m to your Compose file to keep it after an update.' },
+  { key: 'secret', label: 'A missing secret', file: 'docker logs shop-worker',
+    lines: [
+      { text: 'worker: starting, 4 queues' },
+      { text: 'worker: loading payment settings' },
+      { text: 'File "/app/payments.py", line 18, in load' },
+      { text: "KeyError: 'STRIPE_WEBHOOK_SECRET'", mark: true, note: 'no restart will fix this' },
+      { text: 'exited with code 1' },
+    ],
+    cause: "shop-worker reads STRIPE_WEBHOOK_SECRET at startup, and that setting isn't defined, so it exits every time.",
+    manual: "Add STRIPE_WEBHOOK_SECRET to the .env file for shop-worker, then restart it. Digdown can't do this because it doesn't know the secret." },
+  { key: 'undo', label: "A fix that doesn't help", file: 'docker logs shop-web',
+    lines: [
+      { text: 'nginx: GET /healthz 504 upstream timed out after 5.0s', mark: true },
+      { text: 'nginx: GET /healthz 504 upstream timed out after 5.0s', mark: true },
+      { text: 'nginx: upstream shop-api:8000 responded slowly, 41 requests waiting', note: 'is the problem even in here?' },
+    ],
+    cause: 'nginx in shop-web is waiting on a slow shop-api, so its health check times out. A stuck connection pool is the likeliest cause.',
+    fix: 'Restart shop-web to clear its connections.', heal: 'asks', holds: false,
+    healWhy: "The AI wasn't sure enough of the cause, so auto heal asks you first.",
+    failed: "It's still failing after the restart, so the fix was undone. It needs you now." },
+  { key: 'stopped', label: 'You stopped it', file: 'docker logs notes-app',
+    lines: [
+      { t: '13:44:51', text: 'Serving on port 3000' },
+      { t: '13:52:07', text: 'exited with code 137', mark: true, note: 'looks just like a crash' },
+    ],
+    quiet: "no incident. Docker's event log shows someone stopped it, so Digdown stays quiet, spends no AI call, and won't restart it." },
+];
+const first = scenarios[0];
+const screenData = screens.map((item) => ({ key: item.key, src: item.src.src, alt: item.alt, caption: item.caption, href: doc(item.link), more: item.more }));
+const data = JSON.stringify({ scenarios, screens: screenData }).replace(/</g, '\\u003c');
+
+const description = 'Digdown watches the apps you run in Docker. When one fails, it reads the logs and tells you why in plain words, and it can fix the cause.';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Digdown: why did my Docker container crash?</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content="Digdown" />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+    <link rel="canonical" href={new URL(`${base}/`, Astro.site).href} />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="top">
+      <a class="brand" href={`${base}/`} aria-label="Digdown home">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3.5 4.5h17"/><path d="M6.5 10h11"/><path d="M9.5 15.5h5"/></g><circle cx="12" cy="20.75" r="2" fill="currentColor"/></svg>
+        digdown
+      </a>
+      <nav aria-label="Main">
+        <a href={doc()}>Docs</a>
+        <a href={github}>GitHub</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="intro">
+        <div class="pitch">
+          <h1>Why did it crash?</h1>
+          <p>Digdown watches the apps you run in Docker. When one fails, it reads the logs and tells you why, in plain words. If you let it, it fixes the cause too.</p>
+          <p class="small">Free and open source. It runs on your own machine, and it can use a local AI, so your logs needn't go anywhere.</p>
+          <p class="go">
+            <a class="button" href={doc('try-the-demo')}>Try the demo</a>
+            <a href={doc('install-with-docker')}>or install it</a>
+          </p>
+        </div>
+
+        <figure class="sheet">
+          <div class="controls js-only">
+            <fieldset>
+              <legend>Pick a failure</legend>
+              <div class="choices">
+                {scenarios.map((item, i) => (
+                  <label><input type="radio" name="scenario" value={item.key} checked={i === 0} /><span>{item.label}</span></label>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+          <div class="paper">
+            <p class="file" id="log-file">{first.file}</p>
+            <div class="log" id="log" role="group" aria-label="Log lines">
+              {first.lines.map((line) => (
+                <p>
+                  {line.t && <span class="ln">{line.t}</span>}
+                  {line.ring ? (
+                    <span class="killed">{line.text}<svg viewBox="0 0 130 44" fill="none" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M8 25C3 11 39 3 77 4c33 1 47 11 42 22-7 13-73 18-98 8C10 30 5 21 21 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg></span>
+                  ) : line.mark ? <mark>{line.text}</mark> : <span>{line.text}</span>}
+                  {line.note && <em class="note">{line.note}</em>}
+                </p>
+              ))}
+            </div>
+            <div class="verdict" id="verdict" aria-live="polite">
+              <p><strong>Digdown says:</strong> {first.cause} {first.fix}</p>
+              <p class="asks"><span>Approve fix</span> <span>Reject</span></p>
+            </div>
+          </div>
+          <div class="controls js-only">
+            <fieldset>
+              <legend>How much may it do?</legend>
+              <div class="choices">
+                {levels.map((level, i) => (
+                  <label><input type="radio" name="level" value={level.key} checked={i === 2} /><span>{level.label}</span></label>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+          <figcaption><span class="js-only">A sped-up simulation that runs nothing. The first three are from Digdown's demo, and the last is an example. </span><span class="no-js-only">The log and the answer are from the demo. </span>The pen marks are ours.</figcaption>
+        </figure>
+      </section>
+
+      <section class="steps">
+        <h2>What it does when something breaks</h2>
+        <ol>
+          <li>Checks your containers every 15 seconds, so it usually spots a crash quickly.</li>
+          <li>Reads that container's logs and state, and has an AI work out the cause. A local model can take a few minutes.</li>
+          <li>Has a second AI check that answer against the evidence, and tells you if it couldn't confirm it.</li>
+          <li>Tells you the cause, and the fix if a safe one exists.</li>
+          <li>Applies the fix if you've allowed that, watches for a minute to see that it held, and undoes it if it didn't.</li>
+        </ol>
+      </section>
+
+      <section class="ladder">
+        <h2>You choose how much it's allowed to do</h2>
+        <p>Start at the top. Most people should stay there until they trust it.</p>
+        <dl>
+          <div><dt>Explain only <button type="button" class="try js-only" data-level="explain">Try it</button></dt><dd>Tells you what broke and why. Changes nothing.</dd></div>
+          <div><dt>Suggest fixes <button type="button" class="try js-only" data-level="suggest">Try it</button></dt><dd>Also says what to do about it. You do it yourself.</dd></div>
+          <div><dt>Fix after I approve <button type="button" class="try js-only" data-level="approve">Try it</button></dt><dd>Applies the fix when you click Approve.</dd></div>
+          <div><dt>Auto heal <button type="button" class="try js-only" data-level="heal">Try it</button></dt><dd>Fixes whatever needs no decision from you, on the apps you pick. <a href={doc('auto-heal')}>What it fixes, and its limits</a>.</dd></div>
+        </dl>
+      </section>
+
+      <section class="covers">
+        <h2>Works with any app you run in Docker</h2>
+        <p>There's no plugin or setup for each app, because Digdown works from what Docker reports. Turn on auto heal for an app, and it fixes whatever needs no decision from you.</p>
+        <table>
+          <thead><tr><th scope="col">What went wrong</th><th scope="col">What auto heal does</th></tr></thead>
+          <tbody>
+            <tr><td>Crashed, or stuck restarting</td><td>Restarts it, or starts the database it depends on</td></tr>
+            <tr><td>Ran out of memory</td><td>Raises the limit, up to double, and restarts it</td></tr>
+            <tr><td>Failing its health check</td><td>Restarts it</td></tr>
+            <tr><td>Stopped by itself when an app needs it, or never started</td><td>Starts it</td></tr>
+            <tr><td>Close to its memory limit</td><td>Raises the limit, with no restart</td></tr>
+            <tr><td>Returning errors or responding slowly, if you add a check</td><td>Restarts it, then runs the check again</td></tr>
+            <tr><td>The disk is full, if you turn this on</td><td>Clears unused images and build cache</td></tr>
+            <tr class="yours"><td>A wrong setting, a missing secret, or a bug in the app</td><td>Tells you the cause and what to change, because only you can fix these</td></tr>
+            <tr class="yours"><td>Something you stopped or paused, or a job that finished</td><td>Leaves it alone</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="screen" aria-label="The dashboard">
+        <div class="tabs js-only" role="tablist" aria-label="Dashboard screens">
+          {screens.map((item, i) => (
+            <button type="button" role="tab" id={`screen-tab-${item.key}`} aria-controls="screen-panel" aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-screen={item.key}>{item.label}</button>
+          ))}
+        </div>
+        <div id="screen-panel" role="tabpanel" aria-labelledby={`screen-tab-${screens[0].key}`}>
+          <img id="screen-image" src={incidents.src} width={incidents.width} height={incidents.height} loading="lazy" alt={screens[0].alt} />
+          <p><span id="screen-caption">{screens[0].caption}</span> <a id="screen-link" href={doc(screens[0].link)}>{screens[0].more}</a>.</p>
+        </div>
+      </section>
+
+      <section class="honest">
+        <div>
+          <h2>What it can't do</h2>
+          <ul>
+            <li>Fix a wrong setting, a missing secret or a bug in your app. It tells you the cause and what to change.</li>
+            <li>Work with Kubernetes. It's for Docker and Docker Compose.</li>
+            <li>Always be right. The AI can get a cause wrong, which is why auto heal is off by default.</li>
+            <li>Keep personal data out of a hosted AI. It masks secrets, not names in your logs. Use a local model if that matters.</li>
+          </ul>
+        </div>
+        <div>
+          <h2>You may not need it</h2>
+          <p>If a restart solves your problem, Docker's own restart policy already does that, instantly and with no AI. <a href="https://github.com/willfarrell/docker-autoheal">docker-autoheal</a> adds restarts for unhealthy containers.</p>
+          <p>Digdown is for when a container keeps failing and you want to know why, or when the fix is more than a restart.</p>
+        </div>
+      </section>
+
+      <section class="run">
+        <h2>Run it</h2>
+        <div class="tabs js-only" role="tablist" aria-label="Ways to install">
+          {installs.map((item, i) => (
+            <button type="button" role="tab" id={`install-tab-${item.key}`} aria-controls={`install-${item.key}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-install={item.key}>{item.label}</button>
+          ))}
+        </div>
+        {installs.map((item, i) => (
+          <div class="install" id={`install-${item.key}`} role="tabpanel" aria-labelledby={`install-tab-${item.key}`} data-first={i === 0 ? 'true' : undefined}>
+            <h3 class="no-js-only">{item.label}</h3>
+            <p>{item.needs}</p>
+            <div class="code">
+              <pre><code>{item.code}</code></pre>
+              <button type="button" class="js-only" data-copy>Copy</button>
+            </div>
+            <p>{item.next} <a href={doc(item.link)}>Step by step</a>.</p>
+          </div>
+        ))}
+      </section>
+
+      <section class="beta">
+        <h2>How finished is it?</h2>
+        <p>It's a beta. So far it's only been run for real on one Mac, with Docker Desktop and a local model. Linux, hosted AI and Coolify are all still untested. In a small test on made-up failures, the local model found the right cause in all 9 runs that finished, but it's been less consistent on real stacks. <a href={doc('whats-been-tested')}>Here's exactly what's been tried</a>.</p>
+        <p>Try it somewhere that doesn't matter first. If something goes wrong, <a href={`${github}/issues`}>please tell me</a>.</p>
+      </section>
+    </main>
+
+    <footer class="end">
+      <p>Made by <a href="https://github.com/aishwaryawambule">aishwarya rai</a>. Apache 2.0.</p>
+      <p><a href={doc()}>Docs</a> <a href={github}>GitHub</a> <a href={doc('security')}>Security</a></p>
+    </footer>
+
+    <script type="application/json" id="scenario-data" set:html={data}></script>
+    <script is:inline>
+      (() => {
+        const { scenarios, screens } = JSON.parse(document.getElementById('scenario-data').textContent);
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const log = document.getElementById('log');
+        const file = document.getElementById('log-file');
+        const verdict = document.getElementById('verdict');
+        const CHECKS = 6;
+        let timers = [];
+
+        const el = (tag, cls, text) => {
+          const node = document.createElement(tag);
+          if (cls) node.className = cls;
+          if (text != null) node.textContent = text;
+          return node;
+        };
+        const stop = () => { timers.forEach(clearTimeout); timers = []; };
+        const later = (fn, ms) => timers.push(setTimeout(fn, still ? 0 : ms));
+        const picked = (name) => document.querySelector(`input[name="${name}"]:checked`).value;
+        const scenario = () => scenarios.find((item) => item.key === picked('scenario'));
+
+        function drawLog(item) {
+          file.textContent = item.file;
+          log.replaceChildren(...item.lines.map((line) => {
+            const row = el('p');
+            if (line.t) row.append(el('span', 'ln', line.t), ' ');
+            if (line.ring) {
+              const word = el('span', 'killed', line.text);
+              word.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 130 44" fill="none" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M8 25C3 11 39 3 77 4c33 1 47 11 42 22-7 13-73 18-98 8C10 30 5 21 21 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>');
+              row.append(word);
+            } else {
+              row.append(el(line.mark ? 'mark' : 'span', '', line.text));
+            }
+            if (line.note) row.append(' ', el('em', 'note', line.note));
+            return row;
+          }));
+          // Restart the pen marks, so they're drawn each time you pick a failure.
+          log.classList.remove('draw');
+          void log.offsetWidth;
+          log.classList.add('draw');
+        }
+
+        const says = (text) => {
+          const line = el('p');
+          line.append(el('strong', '', 'Digdown says:'), ` ${text}`);
+          return line;
+        };
+        const buttons = (...items) => {
+          const row = el('p', 'asks');
+          items.forEach(([label, action, main]) => {
+            const button = el('button', main ? 'main' : '', label);
+            button.type = 'button';
+            button.addEventListener('click', action);
+            row.append(button);
+          });
+          return row;
+        };
+
+        function runFix(item, byItself) {
+          stop();
+          const steps = el('ol', 'checks');
+          steps.setAttribute('aria-hidden', 'true');
+          for (let i = 0; i < CHECKS; i++) steps.append(el('li'));
+          const status = el('p', 'status', byItself ? 'Auto heal is applying the fix, with no click.' : 'Applying the fix.');
+          verdict.replaceChildren(says(item.cause), el('p', 'fixline', item.fix), steps, status);
+          const failAt = item.holds ? Infinity : 1;
+          const tick = (n) => {
+            if (n === failAt) {
+              steps.children[n - 1].className = 'bad';
+              status.textContent = '';
+              later(() => finish(item, false), 400);
+              return;
+            }
+            if (n > CHECKS) { finish(item, true); return; }
+            steps.children[n - 1].className = 'ok';
+            status.textContent = `Check ${n} of ${CHECKS}: healthy.`;
+            later(() => tick(n + 1), 340);
+          };
+          later(() => tick(1), 500);
+        }
+
+        function finish(item, worked) {
+          verdict.replaceChildren(
+            says(item.cause),
+            el('p', worked ? 'result good' : 'result bad', worked ? item.done : item.failed),
+            buttons(['Run it again', render]),
+          );
+        }
+
+        function render() {
+          stop();
+          const item = scenario();
+          const level = picked('level');
+          if (item.quiet) { verdict.replaceChildren(says(item.quiet)); return; }
+          const parts = [says(item.cause)];
+          if (level === 'explain') {
+            parts.push(el('p', 'aside', 'That\'s all it does at this level. Nothing changed.'));
+          } else if (!item.fix) {
+            parts.push(el('p', 'fixline', item.manual));
+          } else if (level === 'suggest') {
+            parts.push(el('p', 'fixline', `Suggested fix: ${item.fix}`), el('p', 'aside', 'You carry this out yourself. Digdown changes nothing.'));
+          } else if (level === 'heal' && item.heal === 'yes') {
+            verdict.replaceChildren(...parts);
+            later(() => runFix(item, true), 700);
+            return;
+          } else {
+            parts.push(el('p', 'fixline', item.fix));
+            if (level === 'heal') parts.push(el('p', 'aside', item.healWhy));
+            parts.push(buttons(
+              ['Approve fix', () => runFix(item, false), true],
+              ['Reject', () => verdict.replaceChildren(says(item.cause), el('p', 'aside', 'Rejected. Nothing changed, and the incident is closed.'), buttons(['Run it again', render]))],
+            ));
+          }
+          verdict.replaceChildren(...parts);
+        }
+
+        const update = () => { drawLog(scenario()); render(); };
+        document.querySelectorAll('input[name="scenario"], input[name="level"]').forEach((input) => input.addEventListener('change', update));
+        document.querySelectorAll('[data-level]').forEach((button) => button.addEventListener('click', () => {
+          document.querySelector(`input[name="level"][value="${button.dataset.level}"]`).checked = true;
+          update();
+          document.querySelector('.sheet').scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+        }));
+        render();
+
+        // Tabs: the arrow keys move between them, as people expect.
+        function tabs(list, select) {
+          const all = [...list.querySelectorAll('[role="tab"]')];
+          const choose = (tab, focus) => {
+            all.forEach((other) => {
+              other.setAttribute('aria-selected', String(other === tab));
+              other.tabIndex = other === tab ? 0 : -1;
+            });
+            if (focus) tab.focus();
+            select(tab);
+          };
+          all.forEach((tab, i) => {
+            tab.addEventListener('click', () => choose(tab));
+            tab.addEventListener('keydown', (event) => {
+              const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+              if (!step) return;
+              event.preventDefault();
+              choose(all[(i + step + all.length) % all.length], true);
+            });
+          });
+        }
+
+        const screenList = document.querySelector('.screen [role="tablist"]');
+        screens.forEach((item) => { const preload = new Image(); preload.src = item.src; });
+        tabs(screenList, (tab) => {
+          const item = screens.find((candidate) => candidate.key === tab.dataset.screen);
+          const image = document.getElementById('screen-image');
+          image.src = item.src;
+          image.alt = item.alt;
+          document.getElementById('screen-caption').textContent = item.caption;
+          const link = document.getElementById('screen-link');
+          link.href = item.href;
+          link.textContent = item.more;
+          document.getElementById('screen-panel').setAttribute('aria-labelledby', tab.id);
+        });
+
+        const panels = [...document.querySelectorAll('.install')];
+        panels.forEach((panel) => { panel.hidden = !panel.dataset.first; });
+        tabs(document.querySelector('.run [role="tablist"]'), (tab) => {
+          panels.forEach((panel) => { panel.hidden = panel.id !== `install-${tab.dataset.install}`; });
+        });
+
+        document.querySelectorAll('[data-copy]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const text = button.parentElement.querySelector('code').textContent;
+            try {
+              await navigator.clipboard.writeText(text);
+              button.textContent = 'Copied';
+            } catch {
+              button.textContent = 'Select and copy';
+            }
+            setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+          });
+        });
+      })();
+    </script>
+    <style is:global>
+      :root {
+        --page: #141517; --panel: #1b1c1f; --ink: #e6e6e3; --soft: #b0b0ac; --rule: #303236;
+        --marker: #ead94c; --marker-ink: #1c1a06;
+        /* The printed sheet stays paper, the one bright thing on a dark desk. */
+        --paper: #f4f4f1; --paper-ink: #191a1c; --paper-soft: #5f6165; --paper-rule: #c4c6c2; --pen: #b92c1b;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--page); color: var(--ink); font: 400 18px/1.55 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif; }
+      a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+      a:hover { text-decoration-thickness: 2px; }
+      :focus-visible { outline: 2px solid var(--marker); outline-offset: 3px; }
+      code, pre { font-family: 'Commit Mono', ui-monospace, Menlo, monospace; }
+      h1, h2 { margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+      .skip:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+      .top { display: flex; justify-content: space-between; align-items: center; max-width: 76rem; margin: auto; padding: 22px 24px; }
+      .brand { display: inline-flex; align-items: center; gap: 8px; font: 400 17px 'Commit Mono', monospace; text-decoration: none; }
+      .brand svg { width: 19px; height: 19px; }
+      .top nav { display: flex; gap: 22px; font-size: 16px; }
+
+      main { max-width: 76rem; margin: auto; padding: 0 24px; }
+
+      /* The opening: a question, and a printed log someone has marked up. */
+      .intro { display: grid; gap: 40px; padding-top: 34px; }
+      @media (min-width: 960px) { .intro { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; padding-top: 54px; } }
+      h1 { font-size: clamp(3.1rem, 7.4vw, 5.6rem); line-height: 0.98; letter-spacing: -0.035em; }
+      .pitch p { max-width: 30em; margin: 22px 0 0; font-size: 1.14rem; }
+      .pitch .small { margin-top: 14px; font-size: 1rem; color: var(--soft); }
+      .pitch .go { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 26px; font-size: 1rem; }
+      .button { display: inline-block; padding: 11px 18px; border-radius: 3px; background: var(--marker); color: var(--marker-ink); font-weight: 600; text-decoration: none; }
+      .button:hover { background: #f4e76a; }
+
+      .sheet { margin: 0; }
+      .paper { position: relative; padding: 22px 24px 20px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 18px 40px -22px #000; transform: rotate(-0.5deg); }
+      .file { margin: 0 0 12px; padding-bottom: 9px; border-bottom: 1px dashed var(--paper-rule); font: 400 13px 'Commit Mono', monospace; color: var(--paper-soft); }
+      .log { min-height: 190px; font: 400 clamp(11.5px, 1.25vw, 14.5px)/1.5 'Commit Mono', ui-monospace, Menlo, monospace; }
+      .verdict { min-height: 132px; }
+      .log p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 0; padding: 5px 0; }
+      .ln { color: var(--paper-soft); }
+      mark { padding: 2px 4px; margin-left: -4px; background: #f6e96f; color: inherit; }
+      .killed { position: relative; margin-left: 10px; padding-inline: 2px; }
+      .killed svg { position: absolute; inset: -8px -15px -7px -13px; width: calc(100% + 28px); height: calc(100% + 15px); color: var(--pen); overflow: visible; }
+      .note { margin-left: 26px; font: 500 clamp(19px, 1.65vw, 23px)/1 Caveat, 'Bradley Hand', cursive; color: var(--pen); transform: rotate(-2.5deg); }
+      .note.lean { margin-left: 12px; transform: rotate(1deg); }
+      .verdict { margin-top: 22px; padding-top: 14px; border-top: 1px dashed var(--paper-rule); font-size: 15.5px; }
+      .verdict p { margin: 0; }
+      .asks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px !important; font-size: 14px; }
+      .asks span, .asks button { padding: 4px 10px; border: 1px solid var(--paper-rule); border-radius: 3px; background: transparent; color: var(--paper-ink); font: 500 14px 'Schibsted Grotesk Variable', sans-serif; }
+      .asks button { cursor: pointer; }
+      .asks button:hover { border-color: var(--paper-ink); }
+      .asks span:first-child, .asks button.main { background: var(--paper-ink); border-color: var(--paper-ink); color: #fff; }
+      .asks button.main:hover { background: var(--page); }
+      .paper :focus-visible { outline-color: var(--paper-ink); }
+      .verdict p { margin: 0; }
+      .verdict .fixline { margin-top: 8px; font-weight: 500; }
+      .verdict .aside { margin-top: 8px; color: var(--paper-soft); }
+      .verdict .status { margin-top: 8px; min-height: 1.5em; color: var(--paper-soft); }
+      .verdict .result { margin-top: 10px; font-weight: 500; }
+      .verdict .result.good { color: #17693f; }
+      .verdict .result.bad { color: var(--pen); }
+      .checks { display: flex; gap: 5px; margin: 12px 0 0; padding: 0; list-style: none; }
+      .checks li { width: 26px; height: 8px; background: #d9dad6; }
+      .checks li.ok { background: #17693f; }
+      .checks li.bad { background: var(--pen); }
+
+      /* Pick a failure, and how much it may do. */
+      .js-only { display: none; }
+      .js .js-only { display: revert; }
+      .js .no-js-only { display: none; }
+      .controls { margin: 0 0 12px; }
+      .paper + .controls { margin: 16px 0 0; }
+      .controls fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+      .controls legend { padding: 0; margin-bottom: 6px; font-size: 14px; color: var(--soft); }
+      .choices { display: flex; flex-wrap: wrap; gap: 6px; }
+      .choices label { cursor: pointer; }
+      .choices input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+      .choices span { display: block; padding: 5px 11px; border: 1px solid var(--rule); border-radius: 3px; font-size: 14.5px; color: var(--soft); }
+      .choices label:hover span { border-color: var(--soft); color: var(--ink); }
+      .choices input:checked + span { border-color: var(--marker); background: var(--marker); color: var(--marker-ink); font-weight: 500; }
+      .choices input:focus-visible + span { outline: 2px solid var(--marker); outline-offset: 2px; }
+
+      /* Only in answer to someone picking a failure: the pen marks get drawn. */
+      @media (prefers-reduced-motion: no-preference) {
+        .log.draw mark { background-image: linear-gradient(#f6e96f, #f6e96f); background-color: transparent; background-repeat: no-repeat; animation: sweep 420ms ease-out both; }
+        .log.draw .killed path { stroke-dasharray: 1; animation: pen 520ms ease-out 220ms both; }
+        .log.draw .note { animation: appear 300ms ease-out 480ms both; }
+      }
+      @keyframes sweep { from { background-size: 0 100%; } to { background-size: 100% 100%; } }
+      @keyframes pen { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+      @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+
+      .tabs { flex-wrap: wrap; gap: 4px 20px; margin-bottom: 14px; border-bottom: 1px solid var(--rule); }
+      .js .tabs { display: flex; }
+      .tabs button { padding: 8px 0; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; color: var(--soft); font: 500 16px 'Schibsted Grotesk Variable', sans-serif; cursor: pointer; }
+      .tabs button:hover { color: var(--ink); }
+      .tabs button[aria-selected='true'] { border-bottom-color: var(--marker); color: var(--ink); }
+      .install[hidden] { display: none; }
+      .install h3 { margin: 24px 0 0; font-size: 1.1rem; }
+      .install p { margin: 10px 0 0; max-width: 40em; }
+      .try { margin-left: 6px; padding: 0; border: 0; background: none; color: var(--soft); font: 400 14px 'Schibsted Grotesk Variable', sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+      .js .try { display: inline; }
+      .try:hover { color: var(--marker); }
+      figcaption { margin-top: 14px; font-size: 14px; color: var(--soft); }
+      @media (max-width: 620px) {
+        .paper { transform: none; padding: 16px; }
+        .note, .note.lean { margin-left: 0; flex-basis: 100%; }
+      }
+
+      h2 { font-size: clamp(1.55rem, 3vw, 2.15rem); line-height: 1.12; }
+
+      .steps { margin-top: 84px; display: grid; gap: 18px; }
+      @media (min-width: 960px) { .steps { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; } .steps h2 { max-width: 11em; } }
+      .steps ol { margin: 0; padding-left: 1.3em; }
+      .steps li { padding-left: 6px; margin-bottom: 12px; max-width: 34em; }
+      .steps li::marker { font: 400 0.85em 'Commit Mono', monospace; color: var(--soft); }
+
+      /* Each step down gives it more power, so each sits further in. */
+      .ladder { margin-top: 84px; }
+      .ladder > p { margin: 10px 0 0; color: var(--soft); }
+      .ladder dl { margin: 24px 0 0; }
+      .ladder dl > div { display: grid; gap: 2px 28px; padding: 13px 0; border-top: 1px solid var(--rule); }
+      @media (min-width: 720px) {
+        .ladder dl > div { grid-template-columns: 13rem minmax(0, 36em); }
+        .ladder dl > div:nth-child(2) { margin-left: 3rem; }
+        .ladder dl > div:nth-child(3) { margin-left: 6rem; }
+        .ladder dl > div:nth-child(4) { margin-left: 9rem; }
+      }
+      dt { font-weight: 600; }
+      dd { margin: 0; color: var(--soft); }
+
+      .screen { margin-top: 76px; }
+      .screen img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; }
+      .screen p { margin: 12px 0 0; font-size: 15px; color: var(--soft); }
+
+      .covers { margin-top: 84px; }
+      .covers > p { margin: 10px 0 0; max-width: 40em; color: var(--soft); }
+      .covers table { width: 100%; max-width: 60rem; margin-top: 24px; border-collapse: collapse; }
+      .covers th { padding: 0 20px 8px 0; color: var(--soft); font-size: 14.5px; font-weight: 400; text-align: left; }
+      .covers td { padding: 11px 20px 11px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+      .covers td:first-child { width: 46%; }
+      .covers .yours td { color: var(--soft); }
+      .honest { margin-top: 84px; display: grid; gap: 44px; }
+      @media (min-width: 860px) { .honest { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 72px; } }
+      .honest ul { margin: 18px 0 0; padding-left: 1.1em; }
+      .honest li { margin-bottom: 10px; max-width: 34em; }
+      .honest p { margin: 16px 0 0; max-width: 28em; }
+
+      .run { margin-top: 84px; }
+      .run .tabs { margin-top: 18px; }
+      .code { position: relative; margin: 20px 0 16px; background: var(--panel); border: 1px solid var(--rule); color: #ece9c8; border-radius: 3px; }
+      .code pre { margin: 0; padding: 20px 88px 20px 22px; overflow-x: auto; font-size: 14.5px; line-height: 1.8; }
+      .code button { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border: 1px solid #55575b; border-radius: 3px; background: transparent; color: var(--ink); font: 500 13px 'Schibsted Grotesk Variable', sans-serif; cursor: pointer; }
+      .run code { font-size: 0.9em; }
+
+      .beta { margin-top: 84px; max-width: 42em; }
+      .beta p { margin: 14px 0 0; }
+
+      .end { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; max-width: 76rem; margin: 84px auto 0; padding: 22px 24px 34px; font-size: 15px; color: var(--soft); }
+      .end p { margin: 0; display: flex; gap: 18px; }
+      .end p:first-child { display: block; }
+    </style>
+  </body>
+</html>

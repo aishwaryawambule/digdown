@@ -1,0 +1,49 @@
+[project]
+name = "digdown"
+version = "0.2.0"
+description = "Finds out why a Docker container failed, fixes the cause, and undoes the fix if it did not work"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [{name = "aishwarya rai"}]
+keywords = ["docker", "docker-compose", "self-hosted", "monitoring", "ai", "sre"]
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "docker>=7.0",
+  "pydantic>=2.6",
+  "pyyaml>=6.0",
+  "sse-starlette>=2.1",
+  "openai>=1.0",
+  "anthropic>=0.40",
+]
+
+[project.scripts]
+digdown = "digdown.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/aishwaryawambule/digdown"
+Documentation = "https://aishwaryawambule.github.io/digdown/docs/"
+Issues = "https://github.com/aishwaryawambule/digdown/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "httpx>=0.27", "anyio>=4.0", "ruff>=0.4"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["digdown*"]
+
+[tool.setuptools.package-data]
+# Built by scripts/build-dashboard.sh, so an installed copy needs no Node.
+digdown = ["static/**/*"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff.lint]
+# Named explicitly, so a new ruff release can't change what CI enforces.
+select = ["E4", "E7", "E9", "F"]
