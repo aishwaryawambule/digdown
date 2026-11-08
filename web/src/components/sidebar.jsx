@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { Logo } from '@/components/logo'
 import { routeHash } from '@/lib/routes'
 
-const DOCS_URL = 'https://aishwaryawambule.github.io/digdown-website/docs/'
+const DOCS_URL = 'https://aishwaryawambule.github.io/digdown/docs/'
 
 const NAV = [
   { key: 'incidents', label: 'Incidents', icon: TriangleAlert },

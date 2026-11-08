@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.2.1
+## 0.2.2
 
-- The website moved to [aishwaryawambule.github.io/digdown-website](https://aishwaryawambule.github.io/digdown-website/), and the dashboard's Docs links point there.
+- The dashboard's Docs links point at [aishwaryawambule.github.io/digdown](https://aishwaryawambule.github.io/digdown/) again. 0.2.1 pointed them at an address that's no longer used.
 
 ## 0.2.0 (beta)
 
