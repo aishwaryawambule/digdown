@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-g5ptsecz"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>How it works | digdown</title><link rel="canonical" href="https://aishwaryawambule.github.io/digdown/docs/how-it-works/"/><link rel="sitemap" href="/digdown/sitemap-index.xml"/><script>if(!localStorage.getItem('starlight-theme'))localStorage.setItem('starlight-theme','dark')</script><link rel="shortcut icon" href="/digdown/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v7.4.7"/><meta name="generator" content="Starlight v0.42.9"/><meta property="og:title" content="How it works"/><meta property="og:type" content="article"/><meta property="og:url" content="https://aishwaryawambule.github.io/digdown/docs/how-it-works/"/><meta property="og:locale" content="en"/><meta property="og:description" content="How the pieces fit together, for the curious and for contributors."/><meta property="og:site_name" content="digdown"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="How the pieces fit together, for the curious and for contributors."/><script>
+	window.StarlightThemeProvider = (() => {
+		const storedTheme =
+			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
+		const theme =
+			storedTheme ||
+			(window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+		document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		return {
+			updatePickers(theme = storedTheme || 'auto') {
+				document.querySelectorAll('starlight-theme-select').forEach((picker) => {
+					const select = picker.querySelector('select');
+					if (select) select.value = theme;
+					/** @type {HTMLTemplateElement | null} */
+					const tmpl = document.querySelector(`#theme-icons`);
+					const newIcon = tmpl && tmpl.content.querySelector('.' + theme);
+					if (newIcon) {
+						const oldIcon = picker.querySelector('svg.label-icon');
+						if (oldIcon) {
+							oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+						}
+					}
+				});
+			},
+		};
+	})();
+</script><template id="theme-icons"><svg aria-hidden="true" class="light astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M5 12a1 1 0 0 0-1-1H3a1 1 0 0 0 0 2h1a1 1 0 0 0 1-1Zm.64 5-.71.71a1 1 0 0 0 0 1.41 1 1 0 0 0 1.41 0l.71-.71A1 1 0 0 0 5.64 17ZM12 5a1 1 0 0 0 1-1V3a1 1 0 0 0-2 0v1a1 1 0 0 0 1 1Zm5.66 2.34a1 1 0 0 0 .7-.29l.71-.71a1 1 0 1 0-1.41-1.41l-.66.71a1 1 0 0 0 0 1.41 1 1 0 0 0 .66.29Zm-12-.29a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.71-.71a1.004 1.004 0 1 0-1.43 1.41l.73.71ZM21 11h-1a1 1 0 0 0 0 2h1a1 1 0 0 0 0-2Zm-2.64 6A1 1 0 0 0 17 18.36l.71.71a1 1 0 0 0 1.41 0 1 1 0 0 0 0-1.41l-.76-.66ZM12 6.5a5.5 5.5 0 1 0 5.5 5.5A5.51 5.51 0 0 0 12 6.5Zm0 9a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm0 3.5a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0v-1a1 1 0 0 0-1-1Z"/></svg><svg aria-hidden="true" class="dark astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.64 13a1 1 0 0 0-1.05-.14 8.049 8.049 0 0 1-3.37.73 8.15 8.15 0 0 1-8.14-8.1 8.59 8.59 0 0 1 .25-2A1 1 0 0 0 8 2.36a10.14 10.14 0 1 0 14 11.69 1 1 0 0 0-.36-1.05Zm-9.5 6.69A8.14 8.14 0 0 1 7.08 5.22v.27a10.15 10.15 0 0 0 10.14 10.14 9.784 9.784 0 0 0 2.1-.22 8.11 8.11 0 0 1-7.18 4.32v-.04Z"/></svg><svg aria-hidden="true" class="auto astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg></template><link rel="stylesheet" href="/digdown/_astro/print.C9eyqPGL.css" media="print"><style>@font-face{font-family:Schibsted Grotesk Variable;font-style:normal;font-display:swap;font-weight:400 900;src:url(/digdown/_astro/schibsted-grotesk-latin-ext-wght-normal.hsMS0n0O.woff2)format("woff2-variations");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Schibsted Grotesk Variable;font-style:normal;font-display:swap;font-weight:400 900;src:url(/digdown/_astro/schibsted-grotesk-latin-wght-normal.Bb8VGrTG.woff2)format("woff2-variations");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Commit Mono;font-style:normal;font-display:swap;font-weight:400;src:url(/digdown/_astro/commit-mono-latin-400-normal.wzhe4RuD.woff2)format("woff2"),url(/digdown/_astro/commit-mono-latin-400-normal.s0S3qwFW.woff)format("woff")}
+</style><link rel="stylesheet" href="/digdown/_astro/common.DzfUaT1t.css"><script type="module" src="/digdown/_astro/page.cNngjUgL.js"></script></head><body class="astro-g5ptsecz"><a class="sl-skip-link astro-qb7clj6f" href="#_top">Skip to content</a><div class="page sl-flex astro-yntsjkba"><header class="header astro-yntsjkba"><div class="header astro-by6fddyj"><div class="title-wrapper sl-flex astro-by6fddyj"><a href="/digdown/" class="site-title sl-flex astro-6rvad3va"><img class="light:sl-hidden print:hidden astro-6rvad3va" alt src="/digdown/_astro/logo-dark.BFkLvJbm.svg" width="24" height="24"><img class="dark:sl-hidden print:block astro-6rvad3va" alt src="/digdown/_astro/logo-light.Br4kFhjD.svg" width="24" height="24"><span class="astro-6rvad3va" translate="no">digdown</span></a></div><div class="sl-flex print:hidden astro-by6fddyj"><site-search class="astro-by6fddyj astro-b5kgnn7o" data-translations="{&quot;placeholder&quot;:&quot;Search&quot;}"><button data-open-modal disabled aria-label="Search" aria-keyshortcuts="Control+K" class="astro-b5kgnn7o"><svg aria-hidden="true" class="astro-b5kgnn7o astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21.71 20.29 18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg><span class="sl-hidden md:sl-block astro-b5kgnn7o" aria-hidden="true">Search</span><kbd class="sl-hidden md:sl-flex astro-b5kgnn7o" style="display: none"><kbd class="astro-b5kgnn7o">Ctrl</kbd><kbd class="astro-b5kgnn7o">K</kbd></kbd></button><dialog style="padding: 0" aria-label="Search" class="astro-b5kgnn7o"><div class="dialog-frame sl-flex astro-b5kgnn7o"><button data-close-modal class="sl-flex md:sl-hidden astro-b5kgnn7o">Cancel</button><div class="search-container astro-b5kgnn7o"><div id="starlight__search" class="astro-b5kgnn7o"></div></div></div></dialog></site-search><script>
+	(() => {
+		const openBtn = document.querySelector('button[data-open-modal]');
+		const shortcut = openBtn?.querySelector('kbd');
+		if (!openBtn || !(shortcut instanceof HTMLElement)) return;
+		const platformKey = shortcut.querySelector('kbd');
+		if (platformKey && /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform)) {
+			platformKey.textContent = '⌘';
+			openBtn.setAttribute('aria-keyshortcuts', 'Meta+K');
+		}
+		shortcut.style.display = '';
+	})();
+</script><script type="module" src="/digdown/_astro/Search.astro_astro_type_script_index_0_lang.CVLXzTB9.js"></script></div><div class="sl-hidden md:sl-flex print:hidden right-group astro-by6fddyj"><div class="sl-flex social-icons astro-by6fddyj"><a href="https://github.com/aishwaryawambule/digdown" rel="me" class="sl-flex astro-n2mnl6yq"><span class="sr-only astro-n2mnl6yq">GitHub</span><svg aria-hidden="true" class="astro-n2mnl6yq astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script><script type="module">var e=`starlight-theme`,t=e=>e===`auto`||e===`dark`||e===`light`?e:`auto`,n=()=>t(typeof localStorage<`u`&&localStorage.getItem(e));function r(t){typeof localStorage<`u`&&localStorage.setItem(e,t===`light`||t===`dark`?t:``)}var i=()=>matchMedia(`(prefers-color-scheme: light)`).matches?`light`:`dark`;function a(e){StarlightThemeProvider.updatePickers(e),document.documentElement.dataset.theme=e===`auto`?i():e,r(e)}matchMedia(`(prefers-color-scheme: light)`).addEventListener(`change`,()=>{n()===`auto`&&a(`auto`)});var o=class extends HTMLElement{constructor(){super(),a(n()),this.querySelector(`select`)?.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&a(t(e.currentTarget.value))})}};customElements.define(`starlight-theme-select`,o);</script><script type="module">var e=class extends HTMLElement{constructor(){super();let e=this.querySelector(`select`);e&&(e.addEventListener(`change`,e=>{e.currentTarget instanceof HTMLSelectElement&&(window.location.pathname=e.currentTarget.value)}),window.addEventListener(`pageshow`,t=>{if(!t.persisted)return;let n=e.querySelector(`option[selected]`)?.index;n!==e.selectedIndex&&(e.selectedIndex=n??0)}))}};customElements.define(`starlight-lang-select`,e);</script></div></div></header><nav class="sidebar print:hidden astro-yntsjkba" aria-label="Main"><button popovertarget="starlight__sidebar" class="sl-menu-button sl-flex md:sl-hidden print:hidden astro-r2osgdlg"><svg aria-hidden="true" class="open-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M3 8h18a1 1 0 1 0 0-2H3a1 1 0 0 0 0 2Zm18 8H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Zm0-5H3a1 1 0 0 0 0 2h18a1 1 0 0 0 0-2Z"/></svg><svg aria-hidden="true" class="close-menu astro-r2osgdlg astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="m13.41 12 6.3-6.29a1.004 1.004 0 1 0-1.42-1.42L12 10.59l-6.29-6.3a1.004 1.004 0 0 0-1.42 1.42l6.3 6.29-6.3 6.29a1 1 0 0 0 0 1.42.998.998 0 0 0 1.42 0l6.29-6.3 6.29 6.3a.999.999 0 0 0 1.42 0 1 1 0 0 0 0-1.42L13.41 12Z"/></svg><span class="sr-only astro-r2osgdlg">Menu</span></button><script type="module">var e=class extends HTMLElement{constructor(){super();let e=matchMedia(`(min-width: 50em)`),t=()=>{this.popover=e.matches?null:`auto`};t(),e.addEventListener(`change`,()=>t()),this.addEventListener(`toggle`,({newState:e})=>this.trapFocus(e===`open`))}trapFocus(e){document.querySelectorAll(`.main-frame, .sl-skip-link`).forEach(t=>{t.toggleAttribute(`inert`,e)})}};customElements.define(`sl-sidebar-pane`,e);</script><sl-sidebar-pane popover id="starlight__sidebar" class="sidebar-pane astro-yntsjkba"><div class="sidebar-content sl-flex astro-yntsjkba"><sl-sidebar-state-persist data-hash="0sdodb4" class="astro-ipdry5cl"><script aria-hidden="true">
+		(() => {
+			try {
+				if (!matchMedia('(min-width: 50em)').matches) return;
+				/** @type {HTMLElement | null} */
+				const target = document.querySelector('sl-sidebar-state-persist');
+				const state = JSON.parse(sessionStorage.getItem('sl-sidebar-state') || '0');
+				if (!target || !state || target.dataset.hash !== state.hash) return;
+				window._starlightScrollRestore = state.scroll;
+				customElements.define(
+					'sl-sidebar-restore',
+					class SidebarRestore extends HTMLElement {
+						connectedCallback() {
+							try {
+								const idx = parseInt(this.dataset.index || '');
+								const details = this.closest('details');
+								if (details && typeof state.open[idx] === 'boolean') details.open = state.open[idx];
+							} catch {}
+						}
+					}
+				);
+			} catch {}
+		})();
+	</script><ul class="top-level astro-rmhv4bp6"><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Start here</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="0"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/digdown/docs/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">What is Digdown?</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/try-the-demo/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Try the demo</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/install-with-docker/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Install with Docker</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/install-directly/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Install without Docker</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/first-time-setup/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">First-time setup</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/choose-an-ai/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Choose an AI</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/practice-with-the-sandbox/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Practise with a broken stack</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Using Digdown</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="1"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/digdown/docs/using-the-dashboard/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">The dashboard</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/handle-an-incident/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Handle an incident</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/auto-heal/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Auto heal</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/choose-apps/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Choose which apps to watch</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/alerts/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Set up alerts</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Running it</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="2"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/digdown/docs/run-on-a-server/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Run on a server</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/watch-another-server/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Watch another server</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/update-and-uninstall/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Update, back up, or remove</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/troubleshooting/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Troubleshooting</span></a></li></ul></details></li><li class="astro-rmhv4bp6"><details open class="astro-rmhv4bp6"><summary class="astro-rmhv4bp6"><span class="group-label astro-rmhv4bp6"><span class="large astro-rmhv4bp6">Reference</span></span><svg aria-hidden="true" class="caret astro-rmhv4bp6 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.25rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></summary><sl-sidebar-restore data-index="3"></sl-sidebar-restore><ul class="astro-rmhv4bp6"><li class="astro-rmhv4bp6"><a href="/digdown/docs/whats-been-tested/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">What&#39;s been tested</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/faq/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Questions</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/commands/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Commands</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/configuration/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Settings file</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/security/" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">Security</span></a></li><li class="astro-rmhv4bp6"><a href="/digdown/docs/how-it-works/" aria-current="page" class="astro-rmhv4bp6"><span class="astro-rmhv4bp6">How it works</span></a></li></ul></details></li></ul><script aria-hidden="true">
+		(() => {
+			const scroller = document.getElementById('starlight__sidebar');
+			if (!window._starlightScrollRestore || !scroller) return;
+			scroller.scrollTop = window._starlightScrollRestore;
+			delete window._starlightScrollRestore;
+		})();
+	</script></sl-sidebar-state-persist><div class="md:sl-hidden"><div class="mobile-preferences sl-flex astro-p4azlveh"><div class="social-icons astro-p4azlveh"><a href="https://github.com/aishwaryawambule/digdown" rel="me" class="sl-flex astro-n2mnl6yq"><span class="sr-only astro-n2mnl6yq">GitHub</span><svg aria-hidden="true" class="astro-n2mnl6yq astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a></div><starlight-theme-select><label style="--sl-select-width: 6.25em" class="astro-2z5xp7gb"><span class="sr-only astro-2z5xp7gb">Select theme</span><svg aria-hidden="true" class="icon label-icon astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg><select autocomplete="off" class="astro-2z5xp7gb"><option value="dark" class="astro-2z5xp7gb">Dark</option><option value="light" class="astro-2z5xp7gb">Light</option><option value="auto" selected class="astro-2z5xp7gb">Auto</option></select><svg aria-hidden="true" class="icon caret astro-2z5xp7gb astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg></label></starlight-theme-select><script>
+	StarlightThemeProvider.updatePickers();
+</script></div></div></div></sl-sidebar-pane></nav><div class="main-frame astro-yntsjkba"><script type="module">var e=document.getElementById(`starlight__sidebar`),t=e?.querySelector(`sl-sidebar-state-persist`),n=`sl-sidebar-state`,r=()=>{let r=[],i=t?.dataset.hash||``;try{let e=sessionStorage.getItem(n),t=JSON.parse(e||`{}`);Array.isArray(t.open)&&t.hash===i&&(r=t.open)}catch{}return{hash:i,open:r,scroll:e?.scrollTop||0}},i=e=>{try{sessionStorage.setItem(n,JSON.stringify(e))}catch{}},a=()=>i(r()),o=(e,t)=>{let n=r();n.open[t]=e,i(n)};t?.addEventListener(`click`,e=>{if(!(e.target instanceof Element))return;let t=e.target.closest(`summary`)?.closest(`details`);if(!t)return;let n=t.querySelector(`sl-sidebar-restore`),r=parseInt(n?.dataset.index||``);isNaN(r)||o(!t.open,r)}),addEventListener(`visibilitychange`,()=>{document.visibilityState===`hidden`&&a()});</script><div class="lg:sl-flex astro-lrzkfocr"><aside class="right-sidebar-container print:hidden astro-lrzkfocr"><div class="right-sidebar astro-lrzkfocr"><div class="lg:sl-hidden astro-qok35upx"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-66cqc7ze"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-66cqc7ze"><details id="starlight__mobile-toc" class="astro-66cqc7ze"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-66cqc7ze"><span class="toggle sl-flex astro-66cqc7ze">On this page<svg aria-hidden="true" class="caret astro-66cqc7ze astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-66cqc7ze"></span></summary><div class="dropdown astro-66cqc7ze"><ul class="isMobile astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#noticing-a-failure" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Noticing a failure</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#working-out-the-cause" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Working out the cause</span></a><ul class="isMobile astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#what-the-ai-can-look-at" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">What the AI can look at</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#making-a-fix" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Making a fix</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#auto-heal" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Auto heal</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#an-incidents-life" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">An incident’s life</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#where-things-are-kept" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Where things are kept</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-api" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The API</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#what-its-built-with" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">What it’s built with</span></a></li></ul></div></details></nav></mobile-starlight-toc><script type="module" src="/digdown/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.C3fM4Kra.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-qok35upx"><div class="sl-container astro-qok35upx"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-jugkfwgx" style="--depth: 0;"><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#_top" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Overview</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#noticing-a-failure" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Noticing a failure</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#working-out-the-cause" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Working out the cause</span></a><ul class="astro-jugkfwgx" style="--depth: 1;"><li style="--depth: 1;" class="astro-jugkfwgx"><a href="#what-the-ai-can-look-at" style="--depth: 1;" class="astro-jugkfwgx"><span style="--depth: 1;" class="astro-jugkfwgx">What the AI can look at</span></a></li></ul></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#making-a-fix" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Making a fix</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#auto-heal" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Auto heal</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#an-incidents-life" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">An incident’s life</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#where-things-are-kept" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">Where things are kept</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#the-api" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">The API</span></a></li><li style="--depth: 0;" class="astro-jugkfwgx"><a href="#what-its-built-with" style="--depth: 0;" class="astro-jugkfwgx"><span style="--depth: 0;" class="astro-jugkfwgx">What it’s built with</span></a></li></ul></nav></starlight-toc><script type="module" src="/digdown/_astro/TableOfContents.astro_astro_type_script_index_0_lang.BpJaGz7G.js"></script></div></div></div></aside><div class="main-pane astro-lrzkfocr"><main data-pagefind-body class="astro-g5ptsecz" lang="en" dir="ltr"><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><h1 id="_top" class="astro-bebwqqxs">How it works</h1></div></div><div class="content-panel astro-a7po4psb"><div class="sl-container astro-a7po4psb"><div class="sl-markdown-content"><p>Digdown watches your containers, works out why one failed, and, if you let it, fixes it. The part that thinks about a failure and the part that changes things are kept apart:</p>
+<ul>
+<li><strong>The AI can only read.</strong> It looks at logs, container state and how your services connect, and it has no tool that changes anything.</li>
+<li><strong>One part makes changes, the Executor.</strong> It runs only a short list of fixes, only on containers that exist, and only after you click Approve or auto heal’s rules allow it.</li>
+</ul>
+<div class="expressive-code"><link rel="stylesheet" href="/digdown/_astro/ec.w36nc.css"><script type="module" src="/digdown/_astro/ec.0vx5m.js"></script><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">notice ──▶ explain ──▶ plan a fix ──▶ you approve, or auto heal ──▶ fix ──▶ check it held ──▶ done, or undo</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="notice ──▶ explain ──▶ plan a fix ──▶ you approve, or auto heal ──▶ fix ──▶ check it held ──▶ done, or undo"><div></div></button></div></figure></div>
+<h2 id="noticing-a-failure">Noticing a failure</h2>
+<p><strong>The Watcher</strong> asks Docker about every container every 15 seconds (<code>poll_interval_seconds</code>). It raises a signal when a container:</p>
+<ul>
+<li>crashed, or ran out of memory</li>
+<li>is failing its health check</li>
+<li>keeps restarting (<code>restart_loop_threshold</code> restarts in a row)</li>
+<li>stopped by itself, is paused, or never started</li>
+<li>is close to its memory limit</li>
+</ul>
+<p>It also raises one when the disk is nearly full (<code>disk_percent_threshold</code>).</p>
+<p>Each signal has a key made of where it came from, the container, and what went wrong, so the same failure doesn’t open a second incident. A signal has to last for <code>debounce_polls</code> checks before it counts.</p>
+<p><strong>Website and log checks</strong> catch an app that’s running but broken, which Docker can’t see. A website check opens an address and reports errors, no answer, or a slow answer. A log check counts lines that look like errors, and stores only the counts, never the log text. See <a href="/digdown/docs/configuration/#website-and-log-checks">configuration</a>.</p>
+<p><strong>Grafana alerts</strong> can arrive at <code>POST /api/alerts</code>. Each one opens an incident for the app its <code>alert_target_label</code> label names, even if that app runs somewhere Digdown can’t see.</p>
+<p><strong>Related failures are grouped.</strong> If a service fails while something it depends on (Compose <code>depends_on</code>) already has an open incident, within <code>correlation_window_seconds</code>, the new incident is linked to that one. It isn’t diagnosed separately, because the cause is the same.</p>
+<h2 id="working-out-the-cause">Working out the cause</h2>
+<p>Incidents are diagnosed one at a time, by four AI steps. Each step’s full record, every tool it called and what came back, is saved with the incident.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Diagnostician</strong></td>
+<td>Investigates with the read-only tools below, up to <code>max_tool_calls</code> times, and gives a cause, the evidence and how sure it is.</td>
+</tr>
+<tr>
+<td><strong>Critic</strong></td>
+<td>A second check: does the evidence support that cause? If not, the Diagnostician tries again, up to <code>max_critic_rounds</code> times.</td>
+</tr>
+<tr>
+<td><strong>Planner</strong></td>
+<td>Suggests a fix from the short list below, or, if none fits, says what you should do.</td>
+</tr>
+<tr>
+<td><strong>Plan critic</strong></td>
+<td>Checks that the fix is safe, can be undone, and touches only what it should.</td>
+</tr>
+</tbody>
+</table>
+<p>If the Critic still disagrees after its last round, or there’s no safe fix, the incident closes with advice for you (<code>closed_no_fix</code>).</p>
+<p>Some failures need no AI at all. When a service that an app depends on has simply stopped, or a container never started, Docker already says why, so Digdown proposes starting it straight away.</p>
+<h3 id="what-the-ai-can-look-at">What the AI can look at</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it returns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_container_state</code></td>
+<td>Status, health, exit code, restart count, whether it ran out of memory, image</td>
+</tr>
+<tr>
+<td><code>get_recent_logs</code></td>
+<td>The latest log lines, with secrets removed and marked as untrusted</td>
+</tr>
+<tr>
+<td><code>inspect_container</code></td>
+<td>Image, command, restart policy, and the <strong>names</strong> of environment variables, never their values</td>
+</tr>
+<tr>
+<td><code>get_topology</code></td>
+<td>Service names and what depends on what</td>
+</tr>
+<tr>
+<td><code>http_probe</code></td>
+<td>An address’s status, how long it took, and the start of the page, with secrets removed. Only addresses you’ve allowed.</td>
+</tr>
+<tr>
+<td><code>system_inspect</code></td>
+<td>A summary of the host. Only if you turn on <code>host_introspection</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>For an incident about something that isn’t a local container, such as a Grafana alert, the container tools aren’t offered. See <a href="/digdown/docs/security/">security</a>.</p>
+<h2 id="making-a-fix">Making a fix</h2>
+<p>The Executor only runs when Digdown is set to <strong>Fix after I approve</strong> (<code>mode: execute</code>). These are the only fixes it knows:</p>
+<table>
+<thead>
+<tr>
+<th>Fix</th>
+<th>What it does</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>start</code></td>
+<td>Starts a stopped container</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><code>restart</code></td>
+<td>Restarts a container</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><code>set_resource_limit</code></td>
+<td>Raises a container’s memory limit</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><code>recreate</code></td>
+<td>Recreates one container with <code>docker compose up -d --force-recreate --no-deps</code></td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><code>set_env_var</code></td>
+<td>Changes a value in your env file, then recreates the container</td>
+<td>High</td>
+</tr>
+<tr>
+<td><code>clean_docker</code></td>
+<td>Deletes unused images and the build cache when the disk is full. Never offered to the AI, and off until you turn it on.</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<p>Every fix goes through the same steps:</p>
+<ol>
+<li><strong>Check the plan again</strong> against the list of fixes and the containers that exist.</li>
+<li><strong>Save the current state</strong> of each container it will touch.</li>
+<li><strong>Make the change,</strong> one container at a time.</li>
+<li><strong>Watch the container</strong> for <code>verify_polls</code> checks, <code>verify_poll_interval</code> seconds apart.</li>
+<li><strong>Undo the change</strong> if a step failed or the container didn’t stay healthy.</li>
+</ol>
+<p>It ends as <strong>fixed</strong> (the check passed), <strong>undone</strong> (the check failed and the change was reversed) or <strong>failed</strong> (a step, or undoing it, went wrong).</p>
+<h2 id="auto-heal">Auto heal</h2>
+<p>Just before a fix would wait for your approval, the rules in <code>digdown/heal.py</code> decide whether it may run by itself. They use facts from Docker, not anything the AI says. If they allow it, the fix runs through the same steps as a click. If not, it waits for you, and the reason is recorded. See <a href="/digdown/docs/auto-heal/">auto heal</a>.</p>
+<h2 id="an-incidents-life">An incident’s life</h2>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="plaintext"><code><div class="ec-line"><div class="code"><span style="--0:#d6deeb;--1:#403f53">detected → triaged → investigating → proposed → approved → executing → verifying → resolved</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">                          </span></span><span style="--0:#d6deeb;--1:#403f53">│              │                                   │</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">                          </span></span><span style="--0:#d6deeb;--1:#403f53">│              └──▶ resolved (problem went away)   ├──▶ rolled_back</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">                          </span></span><span style="--0:#d6deeb;--1:#403f53">├──▶ diagnosed (explain-only mode)                 └──▶ failed</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">                          </span></span><span style="--0:#d6deeb;--1:#403f53">├──▶ diagnosis_failed ──(retry)──▶ detected</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#d6deeb;--1:#403f53">                          </span></span><span style="--0:#d6deeb;--1:#403f53">└──▶ closed_no_fix</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="detected → triaged → investigating → proposed → approved → executing → verifying → resolved                          │              │                                   │                          │              └──▶ resolved (problem went away)   ├──▶ rolled_back                          ├──▶ diagnosed (explain-only mode)                 └──▶ failed                          ├──▶ diagnosis_failed ──(retry)──▶ detected                          └──▶ closed_no_fix"><div></div></button></div></figure></div>
+<p>It ends in one of: <code>resolved</code>, <code>rejected</code>, <code>rolled_back</code>, <code>failed</code>, <code>closed_no_fix</code> or <code>muted</code>.</p>
+<ul>
+<li><strong>In explain-only mode,</strong> it stops at <code>diagnosed</code>, and waits for the problem to go away or for someone to dismiss it.</li>
+<li><strong>It closes by itself</strong> when the problem has been gone for 4 checks in a row, about a minute, with no restarts in that time. This applies to <code>detected</code>, <code>diagnosed</code>, <code>diagnosis_failed</code> and <code>proposed</code>. Work already under way is left to finish. A Grafana incident closes when Grafana says the alert has cleared.</li>
+<li><strong>It stays closed.</strong> After <code>closed_no_fix</code>, <code>rejected</code>, <code>rolled_back</code> or <code>failed</code>, a problem that never went away doesn’t open a new incident. It does once it clears and comes back. A problem still there after <code>resolved</code> opens a new one, because the fix didn’t hold.</li>
+<li><strong>After Digdown restarts,</strong> anything that was in progress was interrupted. <code>triaged</code> and <code>investigating</code> go back to <code>detected</code>, or to <code>diagnosed</code> in explain-only mode if the cause was already found. In execute mode, <code>approved</code> goes back to <code>proposed</code>, because nothing had changed yet. <code>executing</code> and <code>verifying</code> become <code>failed</code>, saying the fix may be only partly applied.</li>
+<li><strong>A failed diagnosis</strong> can be retried, or dismissed to <code>closed_no_fix</code>.</li>
+</ul>
+<h2 id="where-things-are-kept">Where things are kept</h2>
+<p>One SQLite file (<code>db_path</code>) holds everything:</p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>What’s in it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>incidents</code></td>
+<td>Each incident: its state, container, signal, and the incident it’s linked to</td>
+</tr>
+<tr>
+<td><code>diagnoses</code></td>
+<td>The cause, evidence, confidence and the Critic’s verdict</td>
+</tr>
+<tr>
+<td><code>plans</code></td>
+<td>The proposed fix, its risk, the advice for you, and the plan critic’s verdict</td>
+</tr>
+<tr>
+<td><code>approvals</code></td>
+<td>Each approve or reject, and who made it (<code>auto-heal</code> for auto heal)</td>
+</tr>
+<tr>
+<td><code>executions</code></td>
+<td>What each fix did, what was saved first, and whether it was undone</td>
+</tr>
+<tr>
+<td><code>audit_log</code></td>
+<td>Every step, by every part of Digdown, never edited afterwards</td>
+</tr>
+<tr>
+<td><code>mutes</code></td>
+<td>Containers you’ve muted</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>Settings changed in the dashboard</td>
+</tr>
+</tbody>
+</table>
+<p>The audit log is the record of what happened and why. The incident page and the query in <a href="/digdown/docs/troubleshooting/">troubleshooting</a> both read from it.</p>
+<h2 id="the-api">The API</h2>
+<p>The dashboard uses the same API you can call yourself, on port 8088. When <code>auth_token</code> is set, every call except <code>/api/health</code> and signing in needs it.</p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Method</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/health</code></td>
+<td>GET</td>
+<td>Whether Digdown is up, and its mode</td>
+</tr>
+<tr>
+<td><code>/api/status</code></td>
+<td>GET</td>
+<td>Docker, the AI, the mode and auto heal, as the dashboard shows them</td>
+</tr>
+<tr>
+<td><code>/api/incidents</code></td>
+<td>GET</td>
+<td>Incidents, newest first</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}</code></td>
+<td>GET</td>
+<td>One incident: diagnosis, fix, approvals, what ran, and its audit log</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}/logs</code></td>
+<td>GET</td>
+<td>The container’s logs, with secrets removed</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}/approve</code></td>
+<td>POST</td>
+<td>Approve the proposed fix</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}/reject</code></td>
+<td>POST</td>
+<td>Reject it</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}/retry</code></td>
+<td>POST</td>
+<td>Diagnose again after a failure</td>
+</tr>
+<tr>
+<td><code>/api/incidents/{id}/dismiss</code></td>
+<td>POST</td>
+<td>Close an incident that’s stuck</td>
+</tr>
+<tr>
+<td><code>/api/services</code></td>
+<td>GET</td>
+<td>The containers being watched, and their website checks</td>
+</tr>
+<tr>
+<td><code>/api/alerts</code></td>
+<td>POST</td>
+<td>Receive a Grafana alert</td>
+</tr>
+<tr>
+<td><code>/api/mutes</code></td>
+<td>GET, POST</td>
+<td>List or add mutes</td>
+</tr>
+<tr>
+<td><code>/api/mutes/{pattern}</code></td>
+<td>DELETE</td>
+<td>Remove a mute</td>
+</tr>
+<tr>
+<td><code>/api/history</code></td>
+<td>DELETE</td>
+<td>Clear finished incidents</td>
+</tr>
+<tr>
+<td><code>/api/config</code></td>
+<td>GET, PATCH</td>
+<td>Read settings, or change one that applies straight away</td>
+</tr>
+<tr>
+<td><code>/api/checks</code></td>
+<td>GET, PUT</td>
+<td>Read or replace the website checks</td>
+</tr>
+<tr>
+<td><code>/api/stream</code></td>
+<td>GET</td>
+<td>Live updates, as Server-Sent Events</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-its-built-with">What it’s built with</h2>
+<ul>
+<li><strong>Backend:</strong> Python, FastAPI, SQLite and the Docker SDK. It talks to any OpenAI-compatible AI service or to Claude directly, with no framework in between.</li>
+<li><strong>AI steps:</strong> plain loops of “call a tool, read the answer”, with the whole exchange saved.</li>
+<li><strong>Dashboard:</strong> React, built into the Python package and served by Digdown itself. See <a href="/digdown/docs/using-the-dashboard/">the dashboard</a>.</li>
+</ul></div><footer class="sl-flex astro-ddtxxk7k"><div class="meta sl-flex astro-ddtxxk7k"></div><div class="pagination-links print:hidden astro-b5raizh3" dir="ltr"><a href="/digdown/docs/security/" rel="prev" class="astro-b5raizh3"><svg aria-hidden="true" class="astro-b5raizh3 astro-hkc32dio" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1.5rem;"><path d="M17 11H9.41l3.3-3.29a1.004 1.004 0 1 0-1.42-1.42l-5 5a1 1 0 0 0-.21.33 1 1 0 0 0 0 .76 1 1 0 0 0 .21.33l5 5a1.002 1.002 0 0 0 1.639-.325 1 1 0 0 0-.219-1.095L9.41 13H17a1 1 0 0 0 0-2Z"/></svg><span class="astro-b5raizh3">Previous<br class="astro-b5raizh3"><span class="link-title astro-b5raizh3">Security</span></span></a></div></footer></div></div></main></div></div></div></div></body></html>

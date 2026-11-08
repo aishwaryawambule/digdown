@@ -1,0 +1,193 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Digdown: why did my Docker container crash?</title><meta name="description" content="Digdown watches the apps you run in Docker. When one fails, it reads the logs and tells you why in plain words, and it can fix the cause."><meta property="og:title" content="Digdown"><meta property="og:description" content="Digdown watches the apps you run in Docker. When one fails, it reads the logs and tells you why in plain words, and it can fix the cause."><meta property="og:type" content="website"><meta property="og:url" content="https://aishwaryawambule.github.io/digdown/"><meta property="og:image" content="https://aishwaryawambule.github.io/digdown/_astro/dashboard.BgSYL-PY.png"><meta property="og:image:alt" content="Digdown's Incidents page, showing a container that ran out of memory and the proposed fix."><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="/digdown/favicon.svg" type="image/svg+xml"><link rel="canonical" href="https://aishwaryawambule.github.io/digdown/"><script>document.documentElement.classList.add('js')</script><style>@font-face{font-family:Schibsted Grotesk Variable;font-style:normal;font-display:swap;font-weight:400 900;src:url(/digdown/_astro/schibsted-grotesk-latin-ext-wght-normal.hsMS0n0O.woff2)format("woff2-variations");unicode-range:U+100-2BA,U+2BD-2C5,U+2C7-2CC,U+2CE-2D7,U+2DD-2FF,U+304,U+308,U+329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:Schibsted Grotesk Variable;font-style:normal;font-display:swap;font-weight:400 900;src:url(/digdown/_astro/schibsted-grotesk-latin-wght-normal.Bb8VGrTG.woff2)format("woff2-variations");unicode-range:U+??,U+131,U+152-153,U+2BB-2BC,U+2C6,U+2DA,U+2DC,U+304,U+308,U+329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:Commit Mono;font-style:normal;font-display:swap;font-weight:400;src:url(/digdown/_astro/commit-mono-latin-400-normal.wzhe4RuD.woff2)format("woff2"),url(/digdown/_astro/commit-mono-latin-400-normal.s0S3qwFW.woff)format("woff")}
+</style><link rel="stylesheet" href="/digdown/_astro/index.CNr8MTxG.css"><script type="module" src="/digdown/_astro/page.cNngjUgL.js"></script></head><body><a class="skip" href="#main">Skip to content</a><header class="top"><a class="brand" href="/digdown/" aria-label="Digdown home"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><g stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3.5 4.5h17"></path><path d="M6.5 10h11"></path><path d="M9.5 15.5h5"></path></g><circle cx="12" cy="20.75" r="2" fill="currentColor"></circle></svg>digdown</a><nav aria-label="Main"><a href="/digdown/docs/">Docs</a><a href="https://github.com/aishwaryawambule/digdown">GitHub</a></nav></header><main id="main"><section class="intro"><div class="pitch"><h1>Why did it crash?</h1><p>Digdown watches your Docker apps. When one fails, it tells you why in plain words, and it can fix it.</p><p class="small">Free, open source, and on your own machine.</p><p class="go"><a class="button" href="/digdown/docs/try-the-demo/">Try the demo</a><a href="/digdown/docs/install-with-docker/">or install it</a></p></div><figure class="sheet"><div class="controls js-only"><fieldset><legend>Pick a failure</legend><div class="choices"><label><input type="radio" name="scenario" value="memory" checked><span>Ran out of memory</span></label><label><input type="radio" name="scenario" value="secret"><span>A missing secret</span></label><label><input type="radio" name="scenario" value="undo"><span>A fix that doesn&#39;t help</span></label><label><input type="radio" name="scenario" value="stopped"><span>You stopped it</span></label></div></fieldset></div><div class="paper"><p class="file" id="log-file">docker logs shop-cache</p><div class="log" id="log" role="group" aria-label="Log lines"><p><span class="ln">09:41:02</span><span>Background saving started by pid 214</span></p><p><span class="ln">09:41:09</span><mark>Memory usage 251.2M of maxmemory 256M</mark></p><p><span class="ln">09:41:14</span><mark>bulk import from shop-worker added 41,288 keys</mark></p><p><span class="ln">09:41:15</span><span class="killed">Killed<svg viewBox="0 0 130 44" fill="none" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M8 25C3 11 39 3 77 4c33 1 47 11 42 22-7 13-73 18-98 8C10 30 5 21 21 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"></path></svg></span><em class="note">there&#39;s the problem</em></p><p><span class="ln">09:41:15</span><span>exited with code 137</span><em class="note">restart it and this just happens again</em></p></div><div class="verdict" id="verdict" aria-live="polite"><p><strong>Digdown says:</strong> a bulk import from shop-worker pushed Redis past its 256 MB limit, so the kernel killed it. Raise the shop-cache memory limit to 512 MB and restart it.</p><p class="asks"><span>Approve fix</span> <span>Reject</span></p></div></div><div class="controls js-only"><fieldset><legend>How much may it do?</legend><div class="choices"><label><input type="radio" name="level" value="explain"><span>Explain only</span></label><label><input type="radio" name="level" value="suggest"><span>Suggest fixes</span></label><label><input type="radio" name="level" value="approve" checked><span>Fix after I approve</span></label><label><input type="radio" name="level" value="heal"><span>Auto heal</span></label></div></fieldset></div><figcaption><span class="js-only">A sped-up simulation that runs nothing. The first three are from Digdown's demo, and the last is an example. </span><span class="no-js-only">The log and the answer are from the demo. </span>The pen marks are ours.</figcaption></figure></section><section class="flow"><h2>What happens when something breaks</h2><ol><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/></svg><strong>Notices</strong><span>every 15 seconds</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9.5 10.5h6M9.5 14h6M9.5 17.5h3.5"/></svg><strong>Reads the logs</strong><span>and the container state</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/></svg><strong>Finds the cause</strong><span>with an AI that can only read</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2.5 12.5 4.5 4.5 9-10"/><path d="m12 16.5.5.5 9-10"/></svg><strong>Double-checks it</strong><span>against the evidence</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg><strong>Fixes it</strong><span>if you allow it</span></li><li class="last"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8H4V4"/><path d="M4.5 8A8 8 0 1 1 4 13"/></svg><strong>Undoes it</strong><span>if the fix didn&#39;t hold</span></li></ol></section><section class="ladder"><h2>You choose how far it goes</h2><ol><li><span class="power" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span><strong>Explain only</strong><span class="does">Says why. Changes nothing.</span><button type="button" class="try js-only" data-level="explain">Try it</button></li><li><span class="power" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span><strong>Suggest fixes</strong><span class="does">Says what to do. You do it.</span><button type="button" class="try js-only" data-level="suggest">Try it</button></li><li><span class="power" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><strong>Fix after I approve</strong><span class="does">Fixes it when you click.</span><button type="button" class="try js-only" data-level="approve">Try it</button></li><li><span class="power" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><strong>Auto heal</strong><span class="does">Fixes it by itself, within limits.</span><button type="button" class="try js-only" data-level="heal">Try it</button></li></ol><p class="aside">Start at the top. <a href="/digdown/docs/auto-heal/">What auto heal fixes, and its limits</a>.</p></section><section class="covers"><h2>Works with any app in Docker</h2><p>No plugins. It works from what Docker reports.</p><p class="key"><span class="swatch"></span> Auto heal fixes it by itself <span class="swatch yours"></span> It comes to you</p><ul class="tiles"><li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg><strong>Crashed or restarting</strong><span>Restarts it, or starts what it needs</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="10" rx="1"/><path d="M8 7v10M12 7v10M16 7v10M7 4v3M17 4v3M7 17v3M17 17v3"/></svg><strong>Out of memory</strong><span>Raises the limit and restarts it</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.6 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/><path d="M8 12.5h2.2l1.3-2.5 2 4.5 1.2-2h1.6"/></svg><strong>Health check failing</strong><span>Restarts it</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M10 8.5v7l5.5-3.5z"/></svg><strong>Stopped, but needed</strong><span>Starts it</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/></svg><strong>Near its memory limit</strong><span>Raises the limit</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 2.5 14.4 0 17M12 3.5c-2.5 2.6-2.5 14.4 0 17"/></svg><strong>Site erroring or slow</strong><span>Restarts it, checks again</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg><strong>Disk full</strong><span>Clears unused images, if you allow it</span></li><li class="yours"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="14" r="4"/><path d="m11 11 8-8M16 6l2.5 2.5M14 8l2 2"/></svg><strong>Wrong setting, secret or bug</strong><span>Tells you what to change <span class="sr">(this one comes to you)</span></span></li><li class="yours"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11M11 10V5a1.5 1.5 0 0 1 3 0v6M14 10.5V7a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7-6 7-2.4 0-4-1.4-5.5-3.6L4 14.3a1.5 1.5 0 0 1 2.5-1.6L8 14.5"/></svg><strong>Stopped on purpose, or a finished job</strong><span>Leaves it alone <span class="sr">(this one comes to you)</span></span></li></ul></section><section class="screen" aria-label="The dashboard"><div class="tabs js-only" role="tablist" aria-label="Dashboard screens"><button type="button" role="tab" id="screen-tab-incidents" aria-controls="screen-panel" aria-selected="true" tabindex="0" data-screen="incidents">Incidents</button><button type="button" role="tab" id="screen-tab-incident" aria-controls="screen-panel" aria-selected="false" tabindex="-1" data-screen="incident">One incident</button><button type="button" role="tab" id="screen-tab-heal" aria-controls="screen-panel" aria-selected="false" tabindex="-1" data-screen="heal">Auto heal</button><button type="button" role="tab" id="screen-tab-containers" aria-controls="screen-panel" aria-selected="false" tabindex="-1" data-screen="containers">Containers</button><button type="button" role="tab" id="screen-tab-apps" aria-controls="screen-panel" aria-selected="false" tabindex="-1" data-screen="apps">Settings</button></div><div id="screen-panel" role="tabpanel" aria-labelledby="screen-tab-incidents"><img id="screen-image" src="/digdown/_astro/dashboard.BgSYL-PY.png" width="1400" height="860" loading="lazy" alt="The Incidents page: a container ran out of memory, with the cause, a proposed fix, and what auto heal has already fixed."><p><span id="screen-caption">Does anything need you? The most urgent problem comes first.</span> <a id="screen-link" href="/digdown/docs/using-the-dashboard/">How to read the dashboard</a>.</p></div></section><section class="honest"><h2>Good to know</h2><ul><li><strong>The AI can be wrong.</strong> That's why auto heal starts off.</li><li><strong>Docker and Compose only.</strong> No Kubernetes.</li><li><strong>Only need restarts?</strong> Docker's restart policy or <a href="https://github.com/willfarrell/docker-autoheal">docker-autoheal</a> is enough.</li><li><strong>Private logs?</strong> Use a local AI. A hosted one sees names in your logs.</li></ul></section><section class="run"><h2>Run it</h2><div class="tabs js-only" role="tablist" aria-label="Ways to install"><button type="button" role="tab" id="install-tab-docker" aria-controls="install-docker" aria-selected="true" tabindex="0" data-install="docker">With Docker</button><button type="button" role="tab" id="install-tab-direct" aria-controls="install-direct" aria-selected="false" tabindex="-1" data-install="direct">Without Docker</button><button type="button" role="tab" id="install-tab-demo" aria-controls="install-demo" aria-selected="false" tabindex="-1" data-install="demo">Just the demo</button></div><div class="install" id="install-docker" role="tabpanel" aria-labelledby="install-tab-docker" data-first="true"><h3 class="no-js-only">With Docker</h3><p>Just Docker. About a minute.</p><div class="code"><pre><code>docker run -d --name digdown --restart unless-stopped \
+  -p 127.0.0.1:8088:8088 \
+  -v /var/run/docker.sock:/var/run/docker.sock -v digdown-data:/data \
+  --add-host host.docker.internal:host-gateway \
+  ghcr.io/aishwaryawambule/digdown:latest
+docker logs digdown    # prints a link that signs you in</code></pre><button type="button" class="js-only" data-copy>Copy</button></div><p>Open the link it prints, and answer three questions. <a href="/digdown/docs/install-with-docker/">Step by step</a>.</p></div><div class="install" id="install-direct" role="tabpanel" aria-labelledby="install-tab-direct"><h3 class="no-js-only">Without Docker</h3><p>Python 3.11 or newer, Node 22 or newer, Git, and Docker on the same computer.</p><div class="code"><pre><code>git clone https://github.com/aishwaryawambule/digdown.git &amp;&amp; cd digdown
+python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+scripts/build-dashboard.sh &amp;&amp; pip install .
+digdown start</code></pre><button type="button" class="js-only" data-copy>Copy</button></div><p>Open localhost:8088 and answer three questions. <a href="/digdown/docs/install-directly/">Step by step</a>.</p></div><div class="install" id="install-demo" role="tabpanel" aria-labelledby="install-tab-demo"><h3 class="no-js-only">Just the demo</h3><p>Python 3.11 or newer, Node 22 or newer and Git. No Docker, no AI, and nothing on your computer changes.</p><div class="code"><pre><code>git clone https://github.com/aishwaryawambule/digdown.git &amp;&amp; cd digdown
+python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+scripts/build-dashboard.sh &amp;&amp; pip install .
+digdown demo</code></pre><button type="button" class="js-only" data-copy>Copy</button></div><p>Your browser opens, and four failures play out in about a minute. <a href="/digdown/docs/try-the-demo/">Step by step</a>.</p></div></section></main><footer class="end"><p>Made by <a href="https://github.com/aishwaryawambule">aishwarya rai</a>. Apache 2.0.</p><p><a href="/digdown/docs/">Docs</a> <a href="https://github.com/aishwaryawambule/digdown">GitHub</a> <a href="/digdown/docs/security/">Security</a></p></footer><script type="application/json" id="scenario-data">{"scenarios":[{"key":"memory","label":"Ran out of memory","file":"docker logs shop-cache","lines":[{"t":"09:41:02","text":"Background saving started by pid 214"},{"t":"09:41:09","text":"Memory usage 251.2M of maxmemory 256M","mark":true},{"t":"09:41:14","text":"bulk import from shop-worker added 41,288 keys","mark":true},{"t":"09:41:15","text":"Killed","ring":true,"note":"there's the problem"},{"t":"09:41:15","text":"exited with code 137","note":"restart it and this just happens again"}],"cause":"a bulk import from shop-worker pushed Redis past its 256 MB limit, so the kernel killed it.","fix":"Raise the shop-cache memory limit to 512 MB and restart it.","heal":"yes","holds":true,"done":"Limit raised to 512 MB, and it stayed healthy through all 6 checks. Add mem_limit: 512m to your Compose file to keep it after an update."},{"key":"secret","label":"A missing secret","file":"docker logs shop-worker","lines":[{"text":"worker: starting, 4 queues"},{"text":"worker: loading payment settings"},{"text":"File \"/app/payments.py\", line 18, in load"},{"text":"KeyError: 'STRIPE_WEBHOOK_SECRET'","mark":true,"note":"no restart will fix this"},{"text":"exited with code 1"}],"cause":"shop-worker reads STRIPE_WEBHOOK_SECRET at startup, and that setting isn't defined, so it exits every time.","manual":"Add STRIPE_WEBHOOK_SECRET to the .env file for shop-worker, then restart it. Digdown can't do this because it doesn't know the secret."},{"key":"undo","label":"A fix that doesn't help","file":"docker logs shop-web","lines":[{"text":"nginx: GET /healthz 504 upstream timed out after 5.0s","mark":true},{"text":"nginx: GET /healthz 504 upstream timed out after 5.0s","mark":true},{"text":"nginx: upstream shop-api:8000 responded slowly, 41 requests waiting","note":"is the problem even in here?"}],"cause":"nginx in shop-web is waiting on a slow shop-api, so its health check times out. A stuck connection pool is the likeliest cause.","fix":"Restart shop-web to clear its connections.","heal":"asks","holds":false,"healWhy":"The AI wasn't sure enough of the cause, so auto heal asks you first.","failed":"It's still failing after the restart, so the fix was undone. It needs you now."},{"key":"stopped","label":"You stopped it","file":"docker logs notes-app","lines":[{"t":"13:44:51","text":"Serving on port 3000"},{"t":"13:52:07","text":"exited with code 137","mark":true,"note":"looks just like a crash"}],"quiet":"no incident. Docker's event log shows someone stopped it, so Digdown stays quiet, spends no AI call, and won't restart it."}],"screens":[{"key":"incidents","src":"/digdown/_astro/dashboard.BgSYL-PY.png","alt":"The Incidents page: a container ran out of memory, with the cause, a proposed fix, and what auto heal has already fixed.","caption":"Does anything need you? The most urgent problem comes first.","href":"/digdown/docs/using-the-dashboard/","more":"How to read the dashboard"},{"key":"incident","src":"/digdown/_astro/incident.Dy5HYoR3.png","alt":"One incident, showing what went wrong, the evidence, the proposed fix and the second AI check.","caption":"The cause, the evidence behind it, and what happens if the fix fails.","href":"/digdown/docs/handle-an-incident/","more":"How to handle an incident"},{"key":"heal","src":"/digdown/_astro/auto-heal.DdbYk2X_.png","alt":"The Auto heal page: a switch for every app at once or one app at a time, then what it fixed and what it left for a person.","caption":"Turn it on for every app or one at a time, and see what it fixed by itself.","href":"/digdown/docs/auto-heal/","more":"How auto heal works"},{"key":"containers","src":"/digdown/_astro/containers.C-6k334f.png","alt":"The Containers page, a table of each container with status, image, CPU, memory and restarts.","caption":"Everything it watches, with status, CPU, memory and restarts.","href":"/digdown/docs/using-the-dashboard/","more":"How to read the dashboard"},{"key":"apps","src":"/digdown/_astro/settings-apps.VZ0jg-lh.png","alt":"The Apps tab in Settings, listing what Docker is running and which of it to watch.","caption":"Choose which apps it watches. The rest of the settings are here too.","href":"/digdown/docs/choose-apps/","more":"How to choose apps"}]}</script><script>
+      (() => {
+        const { scenarios, screens } = JSON.parse(document.getElementById('scenario-data').textContent);
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const log = document.getElementById('log');
+        const file = document.getElementById('log-file');
+        const verdict = document.getElementById('verdict');
+        const CHECKS = 6;
+        let timers = [];
+
+        const el = (tag, cls, text) => {
+          const node = document.createElement(tag);
+          if (cls) node.className = cls;
+          if (text != null) node.textContent = text;
+          return node;
+        };
+        const stop = () => { timers.forEach(clearTimeout); timers = []; };
+        const later = (fn, ms) => timers.push(setTimeout(fn, still ? 0 : ms));
+        const picked = (name) => document.querySelector(`input[name="${name}"]:checked`).value;
+        const scenario = () => scenarios.find((item) => item.key === picked('scenario'));
+
+        function drawLog(item) {
+          file.textContent = item.file;
+          log.replaceChildren(...item.lines.map((line) => {
+            const row = el('p');
+            if (line.t) row.append(el('span', 'ln', line.t), ' ');
+            if (line.ring) {
+              const word = el('span', 'killed', line.text);
+              word.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 130 44" fill="none" aria-hidden="true" preserveAspectRatio="none"><path pathLength="1" d="M8 25C3 11 39 3 77 4c33 1 47 11 42 22-7 13-73 18-98 8C10 30 5 21 21 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>');
+              row.append(word);
+            } else {
+              row.append(el(line.mark ? 'mark' : 'span', '', line.text));
+            }
+            if (line.note) row.append(' ', el('em', 'note', line.note));
+            return row;
+          }));
+          // Restart the pen marks, so they're drawn each time you pick a failure.
+          log.classList.remove('draw');
+          void log.offsetWidth;
+          log.classList.add('draw');
+        }
+
+        const says = (text) => {
+          const line = el('p');
+          line.append(el('strong', '', 'Digdown says:'), ` ${text}`);
+          return line;
+        };
+        const buttons = (...items) => {
+          const row = el('p', 'asks');
+          items.forEach(([label, action, main]) => {
+            const button = el('button', main ? 'main' : '', label);
+            button.type = 'button';
+            button.addEventListener('click', action);
+            row.append(button);
+          });
+          return row;
+        };
+
+        function runFix(item, byItself) {
+          stop();
+          const steps = el('ol', 'checks');
+          steps.setAttribute('aria-hidden', 'true');
+          for (let i = 0; i < CHECKS; i++) steps.append(el('li'));
+          const status = el('p', 'status', byItself ? 'Auto heal is applying the fix, with no click.' : 'Applying the fix.');
+          verdict.replaceChildren(says(item.cause), el('p', 'fixline', item.fix), steps, status);
+          const failAt = item.holds ? Infinity : 1;
+          const tick = (n) => {
+            if (n === failAt) {
+              steps.children[n - 1].className = 'bad';
+              status.textContent = '';
+              later(() => finish(item, false), 400);
+              return;
+            }
+            if (n > CHECKS) { finish(item, true); return; }
+            steps.children[n - 1].className = 'ok';
+            status.textContent = `Check ${n} of ${CHECKS}: healthy.`;
+            later(() => tick(n + 1), 340);
+          };
+          later(() => tick(1), 500);
+        }
+
+        function finish(item, worked) {
+          verdict.replaceChildren(
+            says(item.cause),
+            el('p', worked ? 'result good' : 'result bad', worked ? item.done : item.failed),
+            buttons(['Run it again', render]),
+          );
+        }
+
+        function render() {
+          stop();
+          const item = scenario();
+          const level = picked('level');
+          if (item.quiet) { verdict.replaceChildren(says(item.quiet)); return; }
+          const parts = [says(item.cause)];
+          if (level === 'explain') {
+            parts.push(el('p', 'aside', 'That\'s all it does at this level. Nothing changed.'));
+          } else if (!item.fix) {
+            parts.push(el('p', 'fixline', item.manual));
+          } else if (level === 'suggest') {
+            parts.push(el('p', 'fixline', `Suggested fix: ${item.fix}`), el('p', 'aside', 'You carry this out yourself. Digdown changes nothing.'));
+          } else if (level === 'heal' && item.heal === 'yes') {
+            verdict.replaceChildren(...parts);
+            later(() => runFix(item, true), 700);
+            return;
+          } else {
+            parts.push(el('p', 'fixline', item.fix));
+            if (level === 'heal') parts.push(el('p', 'aside', item.healWhy));
+            parts.push(buttons(
+              ['Approve fix', () => runFix(item, false), true],
+              ['Reject', () => verdict.replaceChildren(says(item.cause), el('p', 'aside', 'Rejected. Nothing changed, and the incident is closed.'), buttons(['Run it again', render]))],
+            ));
+          }
+          verdict.replaceChildren(...parts);
+        }
+
+        const update = () => { drawLog(scenario()); render(); };
+        document.querySelectorAll('input[name="scenario"], input[name="level"]').forEach((input) => input.addEventListener('change', update));
+        document.querySelectorAll('[data-level]').forEach((button) => button.addEventListener('click', () => {
+          document.querySelector(`input[name="level"][value="${button.dataset.level}"]`).checked = true;
+          update();
+          document.querySelector('.sheet').scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+        }));
+        render();
+
+        // Tabs: the arrow keys move between them, as people expect.
+        function tabs(list, select) {
+          const all = [...list.querySelectorAll('[role="tab"]')];
+          const choose = (tab, focus) => {
+            all.forEach((other) => {
+              other.setAttribute('aria-selected', String(other === tab));
+              other.tabIndex = other === tab ? 0 : -1;
+            });
+            if (focus) tab.focus();
+            select(tab);
+          };
+          all.forEach((tab, i) => {
+            tab.addEventListener('click', () => choose(tab));
+            tab.addEventListener('keydown', (event) => {
+              const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+              if (!step) return;
+              event.preventDefault();
+              choose(all[(i + step + all.length) % all.length], true);
+            });
+          });
+        }
+
+        const screenList = document.querySelector('.screen [role="tablist"]');
+        screens.forEach((item) => { const preload = new Image(); preload.src = item.src; });
+        tabs(screenList, (tab) => {
+          const item = screens.find((candidate) => candidate.key === tab.dataset.screen);
+          const image = document.getElementById('screen-image');
+          image.src = item.src;
+          image.alt = item.alt;
+          document.getElementById('screen-caption').textContent = item.caption;
+          const link = document.getElementById('screen-link');
+          link.href = item.href;
+          link.textContent = item.more;
+          document.getElementById('screen-panel').setAttribute('aria-labelledby', tab.id);
+        });
+
+        const panels = [...document.querySelectorAll('.install')];
+        panels.forEach((panel) => { panel.hidden = !panel.dataset.first; });
+        tabs(document.querySelector('.run [role="tablist"]'), (tab) => {
+          panels.forEach((panel) => { panel.hidden = panel.id !== `install-${tab.dataset.install}`; });
+        });
+
+        document.querySelectorAll('[data-copy]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            const text = button.parentElement.querySelector('code').textContent;
+            try {
+              await navigator.clipboard.writeText(text);
+              button.textContent = 'Copied';
+            } catch {
+              button.textContent = 'Select and copy';
+            }
+            setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+          });
+        });
+      })();
+    </script></body></html>
