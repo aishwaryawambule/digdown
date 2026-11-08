@@ -4,7 +4,7 @@ import { MODES } from '@/lib/setup'
 import { routeHash } from '@/lib/routes'
 import { autoHealRunning } from '@/lib/domain'
 
-const DOCS_URL = 'https://aishwaryawambule.github.io/digdown/docs/'
+const DOCS_URL = 'https://aishwaryawambule.github.io/digdown-website/docs/'
 
 function aiLabel(status) {
   if (!status) return 'Checking'

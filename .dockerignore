@@ -21,5 +21,4 @@ sandbox
 web/node_modules
 web/dist
 digdown/static
-website
 evals
