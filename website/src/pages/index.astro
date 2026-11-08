@@ -20,9 +20,58 @@ const screens = [
 ];
 
 const installs = [
-  { key: 'docker', label: 'With Docker', needs: 'You only need Docker. This is the one to use on your own containers, and it takes about a minute.', code: 'docker run -d --name digdown --restart unless-stopped \\\n  -p 127.0.0.1:8088:8088 \\\n  -v /var/run/docker.sock:/var/run/docker.sock -v digdown-data:/data \\\n  --add-host host.docker.internal:host-gateway \\\n  ghcr.io/aishwaryawambule/digdown:latest\ndocker logs digdown    # prints a link that signs you in', next: 'Open the link, and setup asks three questions: what to watch, which AI to use, and what Digdown may do.', link: 'install-with-docker' },
-  { key: 'direct', label: 'Without Docker', needs: 'You need Python 3.11 or newer, Node 22 or newer, Git, and Docker running on the same computer.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown start', next: 'Then open localhost:8088, and it asks what to watch and which AI to use.', link: 'install-directly' },
-  { key: 'demo', label: 'Just the demo', needs: 'You need Python 3.11 or newer, Node 22 or newer and Git, but no Docker and no AI. Everything is simulated, so nothing on your computer changes.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown demo', next: 'Your browser opens the dashboard, and four failures play out over about a minute.', link: 'try-the-demo' },
+  { key: 'docker', label: 'With Docker', needs: 'Just Docker. About a minute.', code: 'docker run -d --name digdown --restart unless-stopped \\\n  -p 127.0.0.1:8088:8088 \\\n  -v /var/run/docker.sock:/var/run/docker.sock -v digdown-data:/data \\\n  --add-host host.docker.internal:host-gateway \\\n  ghcr.io/aishwaryawambule/digdown:latest\ndocker logs digdown    # prints a link that signs you in', next: 'Open the link it prints, and answer three questions.', link: 'install-with-docker' },
+  { key: 'direct', label: 'Without Docker', needs: 'Python 3.11 or newer, Node 22 or newer, Git, and Docker on the same computer.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown start', next: 'Open localhost:8088 and answer three questions.', link: 'install-directly' },
+  { key: 'demo', label: 'Just the demo', needs: 'Python 3.11 or newer, Node 22 or newer and Git. No Docker, no AI, and nothing on your computer changes.', code: 'git clone https://github.com/aishwaryawambule/digdown.git && cd digdown\npython3 -m venv .venv && . .venv/bin/activate\nscripts/build-dashboard.sh && pip install .\ndigdown demo', next: 'Your browser opens, and four failures play out in about a minute.', link: 'try-the-demo' },
+];
+
+// Line icons, drawn on a 24 grid.
+const icon = {
+  eye: '<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/>',
+  log: '<path d="M6 3h9l4 4v14H6z"/><path d="M9.5 10.5h6M9.5 14h6M9.5 17.5h3.5"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/>',
+  double: '<path d="m2.5 12.5 4.5 4.5 9-10"/><path d="m12 16.5.5.5 9-10"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
+  undo: '<path d="M8 8H4V4"/><path d="M4.5 8A8 8 0 1 1 4 13"/>',
+  crash: '<circle cx="12" cy="12" r="8.5"/><path d="m9 9 6 6M15 9l-6 6"/>',
+  memory: '<rect x="4" y="7" width="16" height="10" rx="1"/><path d="M8 7v10M12 7v10M16 7v10M7 4v3M17 4v3M7 17v3M17 17v3"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.6 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/><path d="M8 12.5h2.2l1.3-2.5 2 4.5 1.2-2h1.6"/>',
+  play: '<circle cx="12" cy="12" r="8.5"/><path d="M10 8.5v7l5.5-3.5z"/>',
+  gauge: '<path d="M4 16a8 8 0 1 1 16 0"/><path d="m12 16 4-5"/>',
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 2.5 14.4 0 17M12 3.5c-2.5 2.6-2.5 14.4 0 17"/>',
+  disk: '<ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v11c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-11M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
+  key: '<circle cx="8" cy="14" r="4"/><path d="m11 11 8-8M16 6l2.5 2.5M14 8l2 2"/>',
+  hand: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11M11 10V5a1.5 1.5 0 0 1 3 0v6M14 10.5V7a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7-6 7-2.4 0-4-1.4-5.5-3.6L4 14.3a1.5 1.5 0 0 1 2.5-1.6L8 14.5"/>',
+};
+
+const flow = [
+  { icon: 'eye', title: 'Notices', sub: 'every 15 seconds' },
+  { icon: 'log', title: 'Reads the logs', sub: 'and the container state' },
+  { icon: 'search', title: 'Finds the cause', sub: 'with an AI that can only read' },
+  { icon: 'double', title: 'Double-checks it', sub: 'against the evidence' },
+  { icon: 'wrench', title: 'Fixes it', sub: 'if you allow it' },
+  { icon: 'undo', title: 'Undoes it', sub: "if the fix didn't hold" },
+];
+
+const tiles = [
+  { icon: 'crash', what: 'Crashed or restarting', does: 'Restarts it, or starts what it needs' },
+  { icon: 'memory', what: 'Out of memory', does: 'Raises the limit and restarts it' },
+  { icon: 'heart', what: 'Health check failing', does: 'Restarts it' },
+  { icon: 'play', what: 'Stopped, but needed', does: 'Starts it' },
+  { icon: 'gauge', what: 'Near its memory limit', does: 'Raises the limit' },
+  { icon: 'globe', what: 'Site erroring or slow', does: 'Restarts it, checks again' },
+  { icon: 'disk', what: 'Disk full', does: 'Clears unused images, if you allow it' },
+];
+const yours = [
+  { icon: 'key', what: 'Wrong setting, secret or bug', does: 'Tells you what to change' },
+  { icon: 'hand', what: 'Stopped on purpose, or a finished job', does: 'Leaves it alone' },
+];
+
+const ladder = [
+  { key: 'explain', title: 'Explain only', does: 'Says why. Changes nothing.' },
+  { key: 'suggest', title: 'Suggest fixes', does: 'Says what to do. You do it.' },
+  { key: 'approve', title: 'Fix after I approve', does: 'Fixes it when you click.' },
+  { key: 'heal', title: 'Auto heal', does: 'Fixes it by itself, within limits.' },
 ];
 
 const levels = [
@@ -88,6 +137,10 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
     <meta property="og:title" content="Digdown" />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(`${base}/`, Astro.site).href} />
+    <meta property="og:image" content={new URL(incidents.src, Astro.site).href} />
+    <meta property="og:image:alt" content="Digdown's Incidents page, showing a container that ran out of memory and the proposed fix." />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
     <link rel="canonical" href={new URL(`${base}/`, Astro.site).href} />
     <script is:inline>document.documentElement.classList.add('js')</script>
@@ -109,8 +162,8 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
       <section class="intro">
         <div class="pitch">
           <h1>Why did it crash?</h1>
-          <p>Digdown watches the apps you run in Docker. When one fails, it reads the logs and tells you why, in plain words. If you let it, it fixes the cause too.</p>
-          <p class="small">Free and open source. It runs on your own machine, and it can use a local AI, so your logs needn't go anywhere.</p>
+          <p>Digdown watches your Docker apps. When one fails, it tells you why in plain words, and it can fix it.</p>
+          <p class="small">Free, open source, and on your own machine.</p>
           <p class="go">
             <a class="button" href={doc('try-the-demo')}>Try the demo</a>
             <a href={doc('install-with-docker')}>or install it</a>
@@ -160,45 +213,54 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
         </figure>
       </section>
 
-      <section class="steps">
-        <h2>What it does when something breaks</h2>
+      <section class="flow">
+        <h2>What happens when something breaks</h2>
         <ol>
-          <li>Checks your containers every 15 seconds, so it usually spots a crash quickly.</li>
-          <li>Reads that container's logs and state, and has an AI work out the cause. A local model can take a few minutes.</li>
-          <li>Has a second AI check that answer against the evidence, and tells you if it couldn't confirm it.</li>
-          <li>Tells you the cause, and the fix if a safe one exists.</li>
-          <li>Applies the fix if you've allowed that, watches for a minute to see that it held, and undoes it if it didn't.</li>
+          {flow.map((step, i) => (
+            <li class={i === flow.length - 1 ? 'last' : undefined}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icon[step.icon]} />
+              <strong>{step.title}</strong>
+              <span>{step.sub}</span>
+            </li>
+          ))}
         </ol>
       </section>
 
       <section class="ladder">
-        <h2>You choose how much it's allowed to do</h2>
-        <p>Start at the top. Most people should stay there until they trust it.</p>
-        <dl>
-          <div><dt>Explain only <button type="button" class="try js-only" data-level="explain">Try it</button></dt><dd>Tells you what broke and why. Changes nothing.</dd></div>
-          <div><dt>Suggest fixes <button type="button" class="try js-only" data-level="suggest">Try it</button></dt><dd>Also says what to do about it. You do it yourself.</dd></div>
-          <div><dt>Fix after I approve <button type="button" class="try js-only" data-level="approve">Try it</button></dt><dd>Applies the fix when you click Approve.</dd></div>
-          <div><dt>Auto heal <button type="button" class="try js-only" data-level="heal">Try it</button></dt><dd>Fixes whatever needs no decision from you, on the apps you pick. <a href={doc('auto-heal')}>What it fixes, and its limits</a>.</dd></div>
-        </dl>
+        <h2>You choose how far it goes</h2>
+        <ol>
+          {ladder.map((level, i) => (
+            <li>
+              <span class="power" aria-hidden="true">{ladder.map((_, j) => <i class={j <= i ? 'on' : undefined} />)}</span>
+              <strong>{level.title}</strong>
+              <span class="does">{level.does}</span>
+              <button type="button" class="try js-only" data-level={level.key}>Try it</button>
+            </li>
+          ))}
+        </ol>
+        <p class="aside">Start at the top. <a href={doc('auto-heal')}>What auto heal fixes, and its limits</a>.</p>
       </section>
 
       <section class="covers">
-        <h2>Works with any app you run in Docker</h2>
-        <p>There's no plugin or setup for each app, because Digdown works from what Docker reports. Turn on auto heal for an app, and it fixes whatever needs no decision from you.</p>
-        <table>
-          <thead><tr><th scope="col">What went wrong</th><th scope="col">What auto heal does</th></tr></thead>
-          <tbody>
-            <tr><td>Crashed, or stuck restarting</td><td>Restarts it, or starts the database it depends on</td></tr>
-            <tr><td>Ran out of memory</td><td>Raises the limit, up to double, and restarts it</td></tr>
-            <tr><td>Failing its health check</td><td>Restarts it</td></tr>
-            <tr><td>Stopped by itself when an app needs it, or never started</td><td>Starts it</td></tr>
-            <tr><td>Close to its memory limit</td><td>Raises the limit, with no restart</td></tr>
-            <tr><td>Returning errors or responding slowly, if you add a check</td><td>Restarts it, then runs the check again</td></tr>
-            <tr><td>The disk is full, if you turn this on</td><td>Clears unused images and build cache</td></tr>
-            <tr class="yours"><td>A wrong setting, a missing secret, or a bug in the app</td><td>Tells you the cause and what to change, because only you can fix these</td></tr>
-            <tr class="yours"><td>Something you stopped or paused, or a job that finished</td><td>Leaves it alone</td></tr>
-          </tbody>
-        </table>
+        <h2>Works with any app in Docker</h2>
+        <p>No plugins. It works from what Docker reports.</p>
+        <p class="key"><span class="swatch"></span> Auto heal fixes it by itself <span class="swatch yours"></span> It comes to you</p>
+        <ul class="tiles">
+          {tiles.map((tile) => (
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icon[tile.icon]} />
+              <strong>{tile.what}</strong>
+              <span>{tile.does}</span>
+            </li>
+          ))}
+          {yours.map((tile) => (
+            <li class="yours">
+              <svg viewBox="0 0 24 24" aria-hidden="true" set:html={icon[tile.icon]} />
+              <strong>{tile.what}</strong>
+              <span>{tile.does} <span class="sr">(this one comes to you)</span></span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section class="screen" aria-label="The dashboard">
@@ -214,20 +276,13 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
       </section>
 
       <section class="honest">
-        <div>
-          <h2>What it can't do</h2>
-          <ul>
-            <li>Fix a wrong setting, a missing secret or a bug in your app. It tells you the cause and what to change.</li>
-            <li>Work with Kubernetes. It's for Docker and Docker Compose.</li>
-            <li>Always be right. The AI can get a cause wrong, which is why auto heal is off by default.</li>
-            <li>Keep personal data out of a hosted AI. It masks secrets, not names in your logs. Use a local model if that matters.</li>
-          </ul>
-        </div>
-        <div>
-          <h2>You may not need it</h2>
-          <p>If a restart solves your problem, Docker's own restart policy already does that, instantly and with no AI. <a href="https://github.com/willfarrell/docker-autoheal">docker-autoheal</a> adds restarts for unhealthy containers.</p>
-          <p>Digdown is for when a container keeps failing and you want to know why, or when the fix is more than a restart.</p>
-        </div>
+        <h2>Good to know</h2>
+        <ul>
+          <li><strong>The AI can be wrong.</strong> That's why auto heal starts off.</li>
+          <li><strong>Docker and Compose only.</strong> No Kubernetes.</li>
+          <li><strong>Only need restarts?</strong> Docker's restart policy or <a href="https://github.com/willfarrell/docker-autoheal">docker-autoheal</a> is enough.</li>
+          <li><strong>Private logs?</strong> Use a local AI. A hosted one sees names in your logs.</li>
+        </ul>
       </section>
 
       <section class="run">
@@ -251,9 +306,7 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
       </section>
 
       <section class="beta">
-        <h2>How finished is it?</h2>
-        <p>It's a beta. So far it's only been run for real on one Mac, with Docker Desktop and a local model. Linux, hosted AI and Coolify are all still untested. In a small test on made-up failures, the local model found the right cause in all 9 runs that finished, but it's been less consistent on real stacks. <a href={doc('whats-been-tested')}>Here's exactly what's been tried</a>.</p>
-        <p>Try it somewhere that doesn't matter first. If something goes wrong, <a href={`${github}/issues`}>please tell me</a>.</p>
+        <p><strong>It's a beta.</strong> So far it's been run for real on one Mac. <a href={doc('whats-been-tested')}>What's been tested</a>. Try it somewhere that doesn't matter first, and <a href={`${github}/issues`}>tell me</a> if something breaks.</p>
       </section>
     </main>
 
@@ -556,42 +609,69 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
 
       h2 { font-size: clamp(1.55rem, 3vw, 2.15rem); line-height: 1.12; }
 
-      .steps { margin-top: 84px; display: grid; gap: 18px; }
-      @media (min-width: 960px) { .steps { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; } .steps h2 { max-width: 11em; } }
-      .steps ol { margin: 0; padding-left: 1.3em; }
-      .steps li { padding-left: 6px; margin-bottom: 12px; max-width: 34em; }
-      .steps li::marker { font: 400 0.85em 'Commit Mono', monospace; color: var(--soft); }
-
-      /* Each step down gives it more power, so each sits further in. */
-      .ladder { margin-top: 84px; }
-      .ladder > p { margin: 10px 0 0; color: var(--soft); }
-      .ladder dl { margin: 24px 0 0; }
-      .ladder dl > div { display: grid; gap: 2px 28px; padding: 13px 0; border-top: 1px solid var(--rule); }
-      @media (min-width: 720px) {
-        .ladder dl > div { grid-template-columns: 13rem minmax(0, 36em); }
-        .ladder dl > div:nth-child(2) { margin-left: 3rem; }
-        .ladder dl > div:nth-child(3) { margin-left: 6rem; }
-        .ladder dl > div:nth-child(4) { margin-left: 9rem; }
+      /* A failure's path, left to right: a line runs through each stop. */
+      .flow { margin-top: 92px; }
+      .flow ol { position: relative; display: grid; gap: 22px; margin: 30px 0 0; padding: 0; list-style: none; }
+      .flow li { position: relative; display: grid; grid-template-columns: 48px 1fr; column-gap: 14px; align-items: center; align-content: start; }
+      .flow svg { grid-row: span 2; width: 48px; height: 48px; padding: 11px; border: 1px solid var(--rule); border-radius: 50%; background: var(--page); fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; position: relative; z-index: 1; }
+      .flow strong { font-weight: 600; }
+      .flow span { color: var(--soft); font-size: 15px; }
+      .flow li.last svg { border-color: var(--pen); stroke: #f08a7b; }
+      .flow ol::before { content: ''; position: absolute; left: 24px; top: 24px; bottom: 24px; border-left: 1px dashed var(--rule); }
+      @media (min-width: 860px) {
+        .flow ol { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+        .flow li { grid-template-columns: 1fr; justify-items: start; row-gap: 4px; align-items: start; }
+        .flow svg { grid-row: auto; width: 56px; height: 56px; padding: 14px; margin-bottom: 10px; }
+        .flow ol::before { left: 28px; right: calc(100% / 6 - 28px); top: 28px; bottom: auto; border-left: 0; border-top: 1px dashed var(--rule); }
+        .flow li:nth-child(5) svg { border-color: var(--marker); stroke: var(--marker); }
       }
-      dt { font-weight: 600; }
-      dd { margin: 0; color: var(--soft); }
+
+      /* Each step down gives it more power: the meter fills, and the row steps in. */
+      .ladder { margin-top: 92px; }
+      .ladder ol { margin: 26px 0 0; padding: 0; list-style: none; }
+      .ladder li { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 4px 16px; padding: 14px 0; border-top: 1px solid var(--rule); }
+      .ladder li:last-child { border-bottom: 1px solid var(--rule); }
+      .power { grid-row: span 2; display: flex; gap: 3px; }
+      .power i { width: 8px; height: 22px; border: 1px solid var(--rule); border-radius: 1px; }
+      .power i.on { border-color: var(--marker); background: var(--marker); }
+      .ladder strong { font-weight: 600; }
+      .ladder .does { color: var(--soft); }
+      .ladder .try { grid-column: 2; justify-self: start; margin: 0; }
+      .ladder .aside { margin: 14px 0 0; font-size: 15px; color: var(--soft); }
+      @media (min-width: 720px) {
+        .ladder li { grid-template-columns: auto 15rem minmax(0, 1fr) auto; gap: 20px; }
+        .power { grid-row: auto; }
+        .ladder .try { grid-column: auto; }
+        .ladder li:nth-child(2) { margin-left: 2.5rem; }
+        .ladder li:nth-child(3) { margin-left: 5rem; }
+        .ladder li:nth-child(4) { margin-left: 7.5rem; }
+      }
 
       .screen { margin-top: 76px; }
       .screen img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 3px; }
       .screen p { margin: 12px 0 0; font-size: 15px; color: var(--soft); }
 
-      .covers { margin-top: 84px; }
-      .covers > p { margin: 10px 0 0; max-width: 40em; color: var(--soft); }
-      .covers table { width: 100%; max-width: 60rem; margin-top: 24px; border-collapse: collapse; }
-      .covers th { padding: 0 20px 8px 0; color: var(--soft); font-size: 14.5px; font-weight: 400; text-align: left; }
-      .covers td { padding: 11px 20px 11px 0; border-top: 1px solid var(--rule); vertical-align: top; }
-      .covers td:first-child { width: 46%; }
-      .covers .yours td { color: var(--soft); }
-      .honest { margin-top: 84px; display: grid; gap: 44px; }
-      @media (min-width: 860px) { .honest { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 72px; } }
-      .honest ul { margin: 18px 0 0; padding-left: 1.1em; }
-      .honest li { margin-bottom: 10px; max-width: 34em; }
-      .honest p { margin: 16px 0 0; max-width: 28em; }
+      .covers { margin-top: 92px; }
+      .covers > p { margin: 10px 0 0; color: var(--soft); }
+      .covers .key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 24px 0 12px; font-size: 15px; }
+      .swatch { width: 14px; height: 14px; border: 1px solid var(--rule); border-radius: 2px; background: var(--panel); }
+      .swatch.yours { margin-left: 12px; background: transparent; border-style: dashed; border-color: var(--soft); }
+      .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+      .tiles { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 0; padding: 0; list-style: none; }
+      @media (min-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+      @media (min-width: 960px) { .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+      .tiles li { display: grid; grid-template-columns: 26px 1fr; align-content: start; gap: 2px 12px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 3px; background: var(--panel); }
+      .tiles svg { grid-row: span 2; width: 26px; height: 26px; fill: none; stroke: var(--marker); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+      .tiles strong { font-weight: 600; line-height: 1.3; }
+      .tiles span { color: var(--soft); font-size: 15px; line-height: 1.35; }
+      .tiles li.yours { background: transparent; border-style: dashed; border-color: #4a4c50; }
+      .tiles li.yours svg { stroke: var(--soft); }
+
+      .honest { margin-top: 92px; }
+      .honest ul { display: grid; gap: 10px 40px; margin: 18px 0 0; padding: 0; list-style: none; }
+      @media (min-width: 760px) { .honest ul { grid-template-columns: 1fr 1fr; } }
+      .honest li { padding-left: 16px; border-left: 2px solid var(--rule); color: var(--soft); }
+      .honest strong { color: var(--ink); font-weight: 600; }
 
       .run { margin-top: 84px; }
       .run .tabs { margin-top: 18px; }
@@ -600,8 +680,9 @@ const description = 'Digdown watches the apps you run in Docker. When one fails,
       .code button { position: absolute; top: 12px; right: 12px; padding: 4px 10px; border: 1px solid #55575b; border-radius: 3px; background: transparent; color: var(--ink); font: 500 13px 'Schibsted Grotesk Variable', sans-serif; cursor: pointer; }
       .run code { font-size: 0.9em; }
 
-      .beta { margin-top: 84px; max-width: 42em; }
-      .beta p { margin: 14px 0 0; }
+      .beta { margin-top: 72px; padding: 16px 20px; border: 1px dashed var(--rule); border-radius: 3px; max-width: 52rem; }
+      .beta p { margin: 0; color: var(--soft); }
+      .beta strong { color: var(--ink); }
 
       .end { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; max-width: 76rem; margin: 84px auto 0; padding: 22px 24px 34px; font-size: 15px; color: var(--soft); }
       .end p { margin: 0; display: flex; gap: 18px; }
