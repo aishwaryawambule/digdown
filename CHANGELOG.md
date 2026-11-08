@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- The website moved to [aishwaryawambule.github.io/digdown-website](https://aishwaryawambule.github.io/digdown-website/), and the dashboard's Docs links point there.
+
 ## 0.2.0 (beta)
 
 First public version.

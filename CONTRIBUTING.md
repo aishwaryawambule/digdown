@@ -18,7 +18,7 @@ To see real failures, start the deliberately broken stack in [`sandbox/`](sandbo
 
 ## Docs
 
-The guides are plain Markdown in `docs/`, and the website builds from them. To preview: `cd website && npm ci && npm run dev`. Link between pages as `alerts.md`, so links work on GitHub too.
+The guides are plain Markdown in `docs/`, and [the website](https://aishwaryawambule.github.io/digdown-website/) builds from them. Its code is in [digdown-website](https://github.com/aishwaryawambule/digdown-website), with steps to preview it. Link between pages as `alerts.md`, so links work on GitHub too.
 
 ## What we look for
 

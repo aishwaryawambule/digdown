@@ -1,5 +1,7 @@
 # Digdown
 
+**Website and docs: [aishwaryawambule.github.io/digdown-website](https://aishwaryawambule.github.io/digdown-website/)**
+
 Digdown keeps track of the apps you run in Docker. When a container fails, it works out why, explains it in plain language, and can fix the cause. It checks that the fix held and undoes it if it didn't.
 
 It's for people who self-host apps they didn't write and can't debug from the inside. A restart policy brings a crashed container back. Digdown tells you why it crashed, and when a container keeps running out of memory, it raises the limit instead of restarting it forever.
@@ -86,7 +88,7 @@ cd web && npm ci && npm test
 npm run dev    # http://localhost:5173, forwarding /api to Digdown on :8088
 ```
 
-Add `?mock` to the dashboard's address to see it with sample data and no backend. The website and docs site build from `docs/`: `cd website && npm ci && npm run dev`.
+Add `?mock` to the dashboard's address to see it with sample data and no backend. The website's code is in [digdown-website](https://github.com/aishwaryawambule/digdown-website), and it builds its docs pages from `docs/` here.
 
 ## Contributing
 
