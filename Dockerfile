@@ -6,7 +6,7 @@ RUN npm ci
 COPY web/ ./
 RUN npm run build
 
-FROM python:3.12-slim
+FROM python:3.15-slim
 WORKDIR /src
 COPY pyproject.toml ./
 COPY digdown ./digdown
